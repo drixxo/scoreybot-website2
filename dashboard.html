@@ -38,7 +38,8 @@
         }
 
         .sidebar-brand { font-size: 1.3rem; font-weight: 700; margin-bottom: 40px; padding-left: 10px; }
-        .sidebar-brand span { color: var(--accent-purple); }
+        .sidebar-brand a { text-decoration: none; color: inherit; }
+        .sidebar-brand span { color: #ff6b00; } /* Brand Accent matching homepage logo */
 
         .nav-menu { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
 
@@ -121,7 +122,9 @@
 <body>
 
     <nav class="sidebar">
-        <div class="sidebar-brand">Scorey<span>Bot</span> Panel</div>
+        <div class="sidebar-brand">
+            <a href="index.html">← Underscore<span>Power</span></a>
+        </div>
         <div class="nav-menu">
             <div class="nav-item active" onclick="switchTab('tab-streamers', this)">Stream Alerts</div>
             <div class="nav-item" onclick="switchTab('tab-commands', this)">Edit Commands</div>
@@ -134,7 +137,7 @@
     <div class="workspace">
         <header>
             <h2 id="page-title">Twitch Notification Network</h2>
-            <div class="status-badge"><div class="status-dot"></div>SYSTEM LIVE</div>
+            <div class="status-badge"><div class="status-dot"></div>DASHBOARD ONLINE</div>
         </header>
 
         <div class="content-body">
@@ -277,7 +280,6 @@
 
                 <section class="panel">
                     <h3 class="panel-title">Reaction Role Button Setup</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 15px;">Sends a message containing an interactive click-button giving roles directly to users.</p>
                     <div class="form-group">
                         <label>Destination Channel ID</label>
                         <input type="text" id="rrChannelId" class="form-input" placeholder="e.g. 112233445566778899">
@@ -331,7 +333,7 @@
 
     <script>
         // ⚠️ EDIT THIS TO MATCH YOUR RAILWAY PUBLIC ENVIRONMENT NETWORKING LINK
-        const BACKEND_URL = "https://scoreybotv2-production.up.railway.app";
+        const BACKEND_URL = "https://your-bot-production.up.railway.app";
 
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
@@ -360,7 +362,6 @@
             }
         }
 
-        // FETCH METADATA REPOSITORY PIPELINES
         async function fetchStreamers() {
             const container = document.getElementById('streamerListContainer');
             try {
@@ -368,7 +369,6 @@
                 const data = await response.json();
                 
                 document.getElementById('globalChannelId').value = data.globalChannelId || '';
-                document.getElementById('metric-default-channel').innerText = data.globalChannelId || "Not Configured";
                 
                 const streamers = data.streamers || {};
                 const usernames = Object.keys(streamers);
@@ -461,7 +461,6 @@
             fetchCustomCommands();
         }
 
-        // AUTOMOD AND WORD FILTERS PIPELINES
         async function fetchBannedWords() {
             const container = document.getElementById('bannedWordsContainer');
             const res = await fetch(`${BACKEND_URL}/api/automod/words`);
@@ -502,11 +501,10 @@
             container.innerHTML = '';
             if(!data.logs || data.logs.length === 0) { container.innerHTML = '<p style="color:var(--text-muted);">No recorded violations logs found.</p>'; return; }
             data.logs.slice().reverse().forEach(log => {
-                container.innerHTML += `<div class="log-item">[${log.timestamp}] User ID: ${log.userId} triggered strike action in Guild: ${log.guildId}</div>`;
+                container.innerHTML += `<div class="log-item">[${log.timestamp}] User ID: ${log.userId} triggered action in Guild: ${log.guildId}</div>`;
             });
         }
 
-        // COMMUNITY GATEWAY PERSISTENCE LAYERS
         async function fetchCommunitySettings() {
             const res = await fetch(`${BACKEND_URL}/api/community/config`);
             const data = await res.json();
@@ -526,7 +524,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ welcomeChannelId, welcomeMessage, leaveMessage, secretPassword })
             });
-            alert("Community configuration alignments deployed.");
+            alert("Community configurations deployed.");
         }
 
         async function deployReactionRole() {
