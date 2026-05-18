@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScoreyBot | Admin Dashboard</title>
+    <title>ScoreyBot | Admin Center</title>
     <style>
         :root {
             --bg-primary: #0f0f13;
@@ -23,8 +23,59 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-primary);
             color: var(--text-main);
-            line-height: 1.6;
-            padding-bottom: 60px;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation Menu */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-secondary);
+            border-right: 2px solid var(--bg-card);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .sidebar-brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            padding-left: 10px;
+        }
+        .sidebar-brand span { color: var(--accent-purple); }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+        }
+        .nav-item.active {
+            background-color: var(--accent-blurple);
+            color: white;
+        }
+
+        /* Main Workspace Content Area */
+        .workspace {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
         }
 
         header {
@@ -36,161 +87,191 @@
             border-bottom: 2px solid var(--bg-card);
         }
 
-        .logo-area span { color: var(--accent-purple); }
-
         .status-badge {
             display: flex; align-items: center; background-color: var(--bg-card);
             padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
         }
-
         .status-dot {
             width: 8px; height: 8px; background-color: var(--status-online);
             border-radius: 50%; margin-right: 8px; box-shadow: 0 0 8px var(--status-online);
         }
 
-        main { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .content-body { padding: 40px; max-width: 1000px; width: 100%; margin: 0 auto; }
 
-        .metrics-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px;
-        }
+        /* SPA Tab Panel Visibility Controls */
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
 
-        .metric-card { background-color: var(--bg-secondary); border-radius: 12px; padding: 24px; }
-        .metric-title { font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
-        .metric-value { font-size: 2rem; font-weight: 700; }
-        .metric-card.blurple-accent { border-left: 4px solid var(--accent-blurple); }
-
-        .dashboard-content { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
-        @media (max-width: 900px) { .dashboard-content { grid-template-columns: 1fr; } }
-
-        .panel { background-color: var(--bg-secondary); border-radius: 14px; padding: 30px; margin-bottom: 30px; }
+        .panel { background-color: var(--bg-secondary); border-radius: 14px; padding: 30px; margin-bottom: 30px; box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
         .panel-title { font-size: 1.2rem; margin-bottom: 20px; font-weight: 600; border-bottom: 1px solid var(--bg-card); padding-bottom: 12px; }
 
-        /* Form Controller Styles */
+        /* Forms UI */
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted); }
         .form-input {
-            width: 100%; padding: 10px; background-color: var(--bg-card); border: 1px solid rgba(255,255,255,0.1);
+            width: 100%; padding: 12px; background-color: var(--bg-card); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 6px; color: white; font-size: 0.9rem;
         }
-        .btn-container { display: flex; gap: 10px; margin-top: 15px; }
-        .btn {
-            flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; color: white;
-        }
-        .btn-add { background-color: var(--status-online); }
-        .btn-remove { background-color: var(--status-error); }
+        .btn { padding: 12px 24px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; color: white; }
+        .btn-purple { background-color: var(--accent-purple); }
+        .btn-danger { background-color: var(--status-error); }
 
         .streamer-row {
             display: flex; justify-content: space-between; align-items: center;
             padding: 14px 16px; background-color: var(--bg-card); border-radius: 8px; margin-bottom: 12px;
         }
-        .live-indicator { font-size: 0.75rem; background-color: rgba(255,255,255,0.05); color: var(--text-muted); padding: 4px 10px; border-radius: 6px; font-weight: 700; }
 
-        .tech-status-list { display: flex; flex-direction: column; gap: 12px; }
-        .tech-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
-        .tech-value { font-family: monospace; font-weight: bold; background-color: var(--bg-card); padding: 2px 8px; border-radius: 4px; }
+        /* Toggle Switches Layout for Modules Component */
+        .toggle-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 0; border-bottom: 1px solid var(--bg-card);
+        }
+        .toggle-row:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo-area">
-            <h1>Scorey<span>Bot</span> Control Panel</h1>
+    <nav class="sidebar">
+        <div class="sidebar-brand">Scorey<span>Bot</span> Panel</div>
+        <div class="nav-menu">
+            <div class="nav-item active" onclick="switchTab('tab-streamers', this)">Stream Alerts</div>
+            <div class="nav-item" onclick="switchTab('tab-commands', this)">Edit Commands</div>
+            <div class="nav-item" onclick="switchTab('tab-modules', this)">AutoMod Modules</div>
+            <div class="nav-item" onclick="switchTab('tab-system', this)">System Settings</div>
         </div>
-        <div class="status-badge">
-            <div class="status-dot"></div>
-            SYSTEM OPERATIONAL
-        </div>
-    </header>
+    </nav>
 
-    <main>
-        <section class="metrics-grid">
-            <div class="metric-card blurple-accent">
-                <div class="metric-title">AutoMod Integrity Protection</div>
-                <div class="metric-value">Active Engine</div>
-            </div>
-        </section>
+    <div class="workspace">
+        <header>
+            <h2 id="page-title">Twitch Notification Network</h2>
+            <div class="status-badge"><div class="status-dot"></div>SYSTEM RUNNING</div>
+        </header>
 
-        <div class="dashboard-content">
-            
-            <div class="left-column">
+        <div class="content-body">
+
+            <div id="tab-streamers" class="tab-panel active">
                 <section class="panel">
                     <h3 class="panel-title">Manage Stream Alerts</h3>
                     <div class="form-group">
                         <label>Twitch Username</label>
                         <input type="text" id="twitchName" class="form-input" placeholder="e.g. shroud">
                     </div>
-                    <div class="form-group">
-                        <label>Secret Dashboard Password</label>
-                        <input type="password" id="secretPassword" class="form-input" placeholder="Enter WEB_SECRET key">
-                    </div>
-                    <div class="btn-container">
-                        <button class="btn btn-add" onclick="manageStreamer('add')">Add Streamer</button>
-                        <button class="btn btn-remove" onclick="manageStreamer('remove')">Remove Streamer</button>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button class="btn btn-purple" style="background-color: var(--status-online);" onclick="manageStreamer('add')">Add Streamer</button>
+                        <button class="btn btn-danger" onclick="manageStreamer('remove')">Remove Streamer</button>
                     </div>
                 </section>
 
                 <section class="panel">
                     <h3 class="panel-title">Tracked Streamer Registry</h3>
                     <div id="streamerListContainer">
-                        <p style="color: var(--text-muted);">Loading active streams data from api...</p>
+                        <p style="color: var(--text-muted);">Syncing registry tracking details from database endpoints...</p>
                     </div>
                 </section>
             </div>
 
-            <div class="right-column-stack">
+            <div id="tab-commands" class="tab-panel">
                 <section class="panel">
-                    <h3 class="panel-title">System Diagnostics</h3>
-                    <div class="tech-status-list">
-                        <div class="tech-item"><span>API Mode</span><span class="tech-value">Live REST</span></div>
-                        <div class="tech-item"><span>CORS Validation</span><span class="tech-value" style="color: var(--status-online);">Enabled</span></div>
+                    <h3 class="panel-title">Custom Command Variables Mapping</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">Modify existing text layouts or add new custom chat parameters below.</p>
+                    <div class="form-group">
+                        <label>Trigger Command Name</label>
+                        <input type="text" class="form-input" placeholder="e.g. !discord">
                     </div>
+                    <div class="form-group">
+                        <label>Bot Response Reply Output</label>
+                        <input type="text" class="form-input" placeholder="e.g. Join our server at discord.gg/example!">
+                    </div>
+                    <button class="btn btn-purple">Save Command Mapping</button>
+                </section>
+            </div>
+
+            <div id="tab-modules" class="tab-panel">
+                <section class="panel">
+                    <h3 class="panel-title">Core Protection System Matrix</h3>
+                    <div class="toggle-row">
+                        <div><h4>Strict Anti-Slur Protection Filter</h4><p style="color: var(--text-muted); font-size: 0.85rem;">Instantly bans anyone using banned terms.</p></div>
+                        <span style="color: var(--status-online); font-weight: bold;">ENABLED (AUTO)</span>
+                    </div>
+                    <div class="toggle-row">
+                        <div><h4>Discord Invite Hyperlinks Interception</h4><p style="color: var(--text-muted); font-size: 0.85rem;">Deletes outside ads and issues strike counts.</p></div>
+                        <span style="color: var(--status-online); font-weight: bold;">ENABLED (AUTO)</span>
+                    </div>
+                    <div class="toggle-row">
+                        <div><h4>Mass User Mention / Mention Spam Detection</h4><p style="color: var(--text-muted); font-size: 0.85rem;">Intercepts users pinging 5+ members at once.</p></div>
+                        <span style="color: var(--status-online); font-weight: bold;">ENABLED (AUTO)</span>
+                    </div>
+                </section>
+            </div>
+
+            <div id="tab-system" class="tab-panel">
+                <section class="panel">
+                    <h3 class="panel-title">Core System Controls</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Use this authentication matrix section to pass physical state instructions directly into the backend runtime container engine.</p>
+                    <div class="form-group">
+                        <label>Secret Master Admin Dashboard Key PIN</label>
+                        <input type="password" id="secretPassword" class="form-input" placeholder="Enter WEB_SECRET key string">
+                    </div>
+                </section>
+
+                <section class="panel" style="border: 1px solid rgba(242, 63, 67, 0.2);">
+                    <h3 class="panel-title" style="color: var(--status-error);">Danger Zone Operations</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Forcing a hot restart will cleanly disconnect the gateway shards and execute a cloud container cluster rebuild recycling sequence.</p>
+                    <button class="btn btn-danger" style="box-shadow: 0 0 10px rgba(242, 63, 67, 0.2);">Execute Hot Restart Core Sequence</button>
                 </section>
             </div>
 
         </div>
-    </main>
+    </div>
 
     <script>
-        // ⚠️ CHANGE THIS TO YOUR ACTUAL RAILWAY APP URL
+        // ⚠️ EDIT THIS TO MATCH YOUR NEW RAILWAY APP PUBLIC DOMAIN NETWORKING LINK
         const BACKEND_URL = "https://scoreybotv2-production.up.railway.app";
 
-        // Load and render streamers on startup
+        // Tab Switching Engine
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+
+            // Dynamically change visual header title text field
+            document.getElementById('page-title').innerText = element.innerText;
+        }
+
+        // Fetch streamers
         async function fetchStreamers() {
             const container = document.getElementById('streamerListContainer');
             try {
                 const response = await fetch(`${BACKEND_URL}/api/streamers`);
                 const streamers = await response.json();
-                
                 const usernames = Object.keys(streamers);
+                
                 if (usernames.length === 0) {
                     container.innerHTML = `<p style="color: var(--text-muted);">No streamers currently registered inside database.</p>`;
                     return;
                 }
-
                 container.innerHTML = '';
                 usernames.forEach(name => {
                     container.innerHTML += `
                         <div class="streamer-row">
-                            <div>
-                                <h4>${name}</h4>
-                                <p style="font-size: 0.8rem; color: var(--text-muted);">Tracking actively monitored</p>
-                            </div>
-                            <div class="live-indicator">Registered</div>
-                        </div>
-                    `;
+                            <div><h4>${name}</h4><p style="font-size: 0.8rem; color: var(--text-muted);">Tracking actively monitored</p></div>
+                            <div style="font-size: 0.75rem; background-color: rgba(255,255,255,0.05); color: var(--text-muted); padding: 4px 10px; border-radius: 6px; font-weight: 700;">Registered</div>
+                        </div>`;
                 });
             } catch (err) {
-                container.innerHTML = `<p style="color: var(--status-error);">Error communicating with Railway backend server.</p>`;
+                container.innerHTML = `<p style="color: var(--status-error);">Error communicating with Railway backend server endpoints.</p>`;
             }
         }
 
-        // Post updates to the bot
+        // Post adjustments
         async function manageStreamer(actionType) {
             const twitchName = document.getElementById('twitchName').value.trim();
             const secretPassword = document.getElementById('secretPassword').value;
 
             if (!twitchName || !secretPassword) {
-                alert("Please provide both a streamer name and the dashboard secret password key.");
+                alert("Please type a name and provide your master administrative secret authentication token.");
                 return;
             }
 
@@ -200,21 +281,15 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: actionType, twitchName, secretPassword })
                 });
-
                 const result = await response.json();
                 if (response.ok) {
                     alert(`Success: ${result.message}`);
                     document.getElementById('twitchName').value = '';
-                    fetchStreamers(); // Refresh display
-                } else {
-                    alert(`Error: ${result.error}`);
-                }
-            } catch (err) {
-                alert("Could not connect to your Railway bot server endpoint.");
-            }
+                    fetchStreamers();
+                } else { alert(`Error: ${result.error}`); }
+            } catch (err) { alert("Network error connecting to runtime platform backend."); }
         }
 
-        // Run fetch on initial window load
         fetchStreamers();
     </script>
 </body>
