@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScoreyBot | Admin Center</title>
+    <title>ScoreyBot | Ultimate Admin Center</title>
     <style>
         :root {
             --bg-primary: #0f0f13;
@@ -75,13 +75,13 @@
         .panel-title { font-size: 1.2rem; margin-bottom: 20px; font-weight: 600; border-bottom: 1px solid var(--bg-card); padding-bottom: 12px; }
 
         .metrics-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px;
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px;
         }
         .metric-card {
-            background-color: var(--bg-card); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-blurple);
+            background-color: var(--bg-secondary); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-blurple); box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
-        .metric-card h5 { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
-        .metric-card p { font-size: 1.6rem; font-weight: 700; color: white; margin-top: 5px; }
+        .metric-card h5 { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+        .metric-card p { font-size: 1.4rem; font-weight: 700; color: white; margin-top: 5px; }
 
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted); }
@@ -108,11 +108,14 @@
             padding: 14px 16px; background-color: var(--bg-card); border-radius: 8px; margin-bottom: 12px;
         }
 
-        .toggle-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 16px 0; border-bottom: 1px solid var(--bg-card);
+        .log-item {
+            padding: 12px; background-color: var(--bg-card); border-radius: 6px; margin-bottom: 8px;
+            font-family: monospace; font-size: 0.85rem; border-left: 4px solid var(--status-warning);
         }
-        .toggle-row:last-child { border-bottom: none; }
+
+        .badge-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .badge { background-color: var(--bg-card); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; }
+        .badge span { cursor: pointer; color: var(--status-error); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -123,6 +126,7 @@
             <div class="nav-item active" onclick="switchTab('tab-streamers', this)">Stream Alerts</div>
             <div class="nav-item" onclick="switchTab('tab-commands', this)">Edit Commands</div>
             <div class="nav-item" onclick="switchTab('tab-modules', this)">AutoMod Modules</div>
+            <div class="nav-item" onclick="switchTab('tab-community', this)">Community Tools</div>
             <div class="nav-item" onclick="switchTab('tab-system', this)">System Settings</div>
         </div>
     </nav>
@@ -130,7 +134,7 @@
     <div class="workspace">
         <header>
             <h2 id="page-title">Twitch Notification Network</h2>
-            <div class="status-badge"><div class="status-dot"></div>SYSTEM RUNNING</div>
+            <div class="status-badge"><div class="status-dot"></div>SYSTEM LIVE</div>
         </header>
 
         <div class="content-body">
@@ -138,26 +142,34 @@
             <div id="tab-streamers" class="tab-panel active">
                 <div class="metrics-grid">
                     <div class="metric-card" style="border-left-color: var(--accent-purple);">
-                        <h5>Tracked Streamers</h5>
+                        <h5>Tracked Streams</h5>
                         <p id="metric-streamers-count">0</p>
                     </div>
+                    <div class="metric-card" style="border-left-color: var(--accent-blurple);">
+                        <h5>Custom Cmds</h5>
+                        <p id="metric-commands-count">0</p>
+                    </div>
+                    <div class="metric-card" style="border-left-color: var(--status-warning);">
+                        <h5>Total Violations</h5>
+                        <p id="metric-violations-count">0</p>
+                    </div>
                     <div class="metric-card" style="border-left-color: var(--status-online);">
-                        <h5>Global Alert Target</h5>
-                        <p id="metric-default-channel" style="font-size: 1.1rem; padding-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Loading...</p>
+                        <h5>Alert Shards</h5>
+                        <p>Active</p>
                     </div>
                 </div>
 
                 <section class="panel">
                     <h3 class="panel-title">Configure Global Default Alert Channel</h3>
                     <div class="form-group">
-                        <label>Discord Channel ID (Used if a streamer doesn't have a specific channel set)</label>
+                        <label>Discord Channel ID</label>
                         <input type="text" id="globalChannelId" class="form-input" placeholder="e.g. 112233445566778899">
                     </div>
                     <button class="btn btn-blurple" onclick="saveGlobalChannel()">Update Default Channel</button>
                 </section>
 
                 <section class="panel">
-                    <h3 class="panel-title">Manage Stream Alerts</h3>
+                    <h3 class="panel-title">Add / Edit Stream Alerts</h3>
                     <div class="form-group">
                         <label>Twitch Username</label>
                         <input type="text" id="twitchName" class="form-input" placeholder="e.g. shroud">
@@ -167,12 +179,16 @@
                         <input type="text" id="streamerChannelId" class="form-input" placeholder="Leave blank to use global default channel">
                     </div>
                     <div class="form-group">
+                        <label>Role ID to Mention (Optional - Do not use symbols)</label>
+                        <input type="text" id="streamerRoleId" class="form-input" placeholder="e.g. 987654321012345678">
+                    </div>
+                    <div class="form-group">
+                        <label>Embed Side Border Accent Color (Hex Format)</label>
+                        <input type="text" id="streamerColor" class="form-input" placeholder="#6441a5">
+                    </div>
+                    <div class="form-group">
                         <label>Notification Template (Optional)</label>
-                        <input type="text" id="customMessage" class="form-input" placeholder="e.g. 🔔 {user} is live streaming {game}! Go watch: {link}">
-                        <div class="variable-guide">
-                            <strong>Available Placeholders:</strong><br>
-                            <code>{user}</code> - Streamer Name | <code>{title}</code> - Stream Title | <code>{game}</code> - Game Name | <code>{link}</code> - Channel URL
-                        </div>
+                        <input type="text" id="customMessage" class="form-input" placeholder="🔔 {user} is live streaming {game}! Go watch: {link}">
                     </div>
                     <div style="display: flex; gap: 10px; margin-top: 20px;">
                         <button class="btn btn-purple" style="background-color: var(--status-online);" onclick="manageStreamer('add')">Save / Update Streamer</button>
@@ -182,35 +198,20 @@
 
                 <section class="panel">
                     <h3 class="panel-title">Tracked Streamer Registry</h3>
-                    <div id="streamerListContainer">
-                        <p style="color: var(--text-muted);">Synchronizing streamer tracking layout registry...</p>
-                    </div>
+                    <div id="streamerListContainer"></div>
                 </section>
             </div>
 
             <div id="tab-commands" class="tab-panel">
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <h5>Active Custom Commands</h5>
-                        <p id="metric-commands-count">0</p>
-                    </div>
-                    <div class="metric-card" style="border-left-color: var(--status-warning);">
-                        <h5>Supported Engines</h5>
-                        <p style="font-size: 1.2rem; padding-top: 6px;">Prefix + Slash</p>
-                    </div>
-                </div>
-
                 <section class="panel">
                     <h3 class="panel-title">Deploy New Custom Command</h3>
-                    
                     <div class="form-group">
-                        <label>Command Activation Method</label>
+                        <label>Command Type</label>
                         <select id="commandType" class="form-input" onchange="toggleCommandStyleUI()">
                             <option value="prefix">Standard Text Prefix Command (! or ?)</option>
                             <option value="slash">Official Discord Slash Command (/)</option>
                         </select>
                     </div>
-
                     <div class="form-group" id="prefixSelectionContainer">
                         <label>Choose Prefix Trigger</label>
                         <select id="commandPrefix" class="form-input" style="width: 120px;">
@@ -218,51 +219,88 @@
                             <option value="?">?</option>
                         </select>
                     </div>
-
                     <div class="form-group">
-                        <label id="triggerInputLabel">Trigger Keyword (Do not include symbols)</label>
+                        <label id="triggerInputLabel">Trigger Keyword</label>
                         <input type="text" id="commandTrigger" class="form-input" placeholder="e.g. website">
                     </div>
-
                     <div class="form-group">
                         <label>Bot Action Response Output</label>
-                        <input type="text" id="commandResponse" class="form-input" placeholder="e.g. Check out our cool site at v2.scoreybot.app!">
+                        <input type="text" id="commandResponse" class="form-input" placeholder="Check out our site at scoreybot.app!">
                     </div>
-
-                    <div style="display: flex; gap: 10px; margin-top: 20px;">
-                        <button class="btn btn-purple" onclick="saveCustomCommand()">Deploy Command Structure</button>
-                    </div>
+                    <button class="btn btn-purple" onclick="saveCustomCommand()">Deploy Command Structure</button>
                 </section>
 
                 <section class="panel">
                     <h3 class="panel-title">Active Dynamic Command Matrix</h3>
-                    <div id="commandListContainer">
-                        <p style="color: var(--text-muted);">Synchronizing configuration matrices from cloud...</p>
-                    </div>
+                    <div id="commandListContainer"></div>
                 </section>
             </div>
 
             <div id="tab-modules" class="tab-panel">
                 <section class="panel">
-                    <h3 class="panel-title">Core Protection System Matrix</h3>
-                    <div class="toggle-row">
-                        <div><h4>Strict Anti-Slur Protection Filter</h4><p style="color: var(--text-muted); font-size: 0.85rem;">Instantly bans anyone using banned terms.</p></div>
-                        <span style="color: var(--status-online); font-weight: bold;">ENABLED (AUTO)</span>
+                    <h3 class="panel-title">Blacklisted Phrases Filter</h3>
+                    <div class="form-group">
+                        <label>Add New Term / Sentence To Blocklist</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="newBannedWord" class="form-input" placeholder="Type word/phrase here">
+                            <button class="btn btn-purple" onclick="addBannedWord()">Block Phrase</button>
+                        </div>
                     </div>
-                    <div class="toggle-row">
-                        <div><h4>Discord Invite Hyperlinks Interception</h4><p style="color: var(--text-muted); font-size: 0.85rem;">Deletes outside ads and issues strike counts.</p></div>
-                        <span style="color: var(--status-online); font-weight: bold;">ENABLED (AUTO)</span>
+                    <div class="badge-list" id="bannedWordsContainer"></div>
+                </section>
+
+                <section class="panel">
+                    <h3 class="panel-title">Live Moderation Audit Stream</h3>
+                    <div id="moderationLogsContainer" style="max-height: 300px; overflow-y: auto;">
+                        <p style="color: var(--text-muted);">Awaiting network synchronization updates...</p>
                     </div>
-                    <div class="toggle-row">
-                        <div><h4>Mass User Mention / Mention Spam Detection</h4><p style="color: var(--text-muted); font-size: 0.85rem;">Intercepts users pinging 5+ members at once.</p></div>
-                        <span style="color: var(--status-online); font-weight: bold;">ENABLED (AUTO)</span>
+                </section>
+            </div>
+
+            <div id="tab-community" class="tab-panel">
+                <section class="panel">
+                    <h3 class="panel-title">Welcome & Leave Gateway Settings</h3>
+                    <div class="form-group">
+                        <label>Welcome System Target Channel ID</label>
+                        <input type="text" id="welcomeChannelId" class="form-input" placeholder="e.g. 112233445566778899">
                     </div>
+                    <div class="form-group">
+                        <label>Welcome Member Message Notification</label>
+                        <input type="text" id="welcomeMessage" class="form-input" placeholder="Welcome {user} to the server! You are member #{count}!">
+                    </div>
+                    <div class="form-group">
+                        <label>Leave Member Message Notification</label>
+                        <input type="text" id="leaveMessage" class="form-input" placeholder="{user} just departed the server.">
+                    </div>
+                    <button class="btn btn-purple" onclick="saveWelcomeSettings()">Save Gateway Configurations</button>
+                </section>
+
+                <section class="panel">
+                    <h3 class="panel-title">Reaction Role Button Setup</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">Sends a message containing an interactive click-button giving roles directly to users.</p>
+                    <div class="form-group">
+                        <label>Destination Channel ID</label>
+                        <input type="text" id="rrChannelId" class="form-input" placeholder="e.g. 112233445566778899">
+                    </div>
+                    <div class="form-group">
+                        <label>Embed Description Instructions Content Text</label>
+                        <input type="text" id="rrEmbedText" class="form-input" placeholder="Click the button below to claim the Announcements role!">
+                    </div>
+                    <div class="form-group">
+                        <label>Role ID To Grant On Click</label>
+                        <input type="text" id="rrRoleId" class="form-input" placeholder="e.g. 987654321012345678">
+                    </div>
+                    <div class="form-group">
+                        <label>Interactive Button Display Label Text</label>
+                        <input type="text" id="rrButtonText" class="form-input" placeholder="Claim Role">
+                    </div>
+                    <button class="btn btn-blurple" onclick="deployReactionRole()">Deploy Active Reaction Embed</button>
                 </section>
             </div>
 
             <div id="tab-system" class="tab-panel">
                 <section class="panel">
-                    <h3 class="panel-title">Bot Presence Configuration</h3>
+                    <h3 class="panel-title">Bot Status Presentation Presence</h3>
                     <div class="form-group">
                         <label>Activity Display Text</label>
                         <input type="text" id="botPresenceText" class="form-input" placeholder="e.g. over the server">
@@ -281,17 +319,10 @@
 
                 <section class="panel">
                     <h3 class="panel-title">Authentication Matrix</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 20px;">Provide your password token verification to execute secure actions.</p>
                     <div class="form-group">
                         <label>Secret Admin Dashboard Key (WEB_SECRET)</label>
                         <input type="password" id="masterSecretPassword" class="form-input" placeholder="Enter WEB_SECRET key string">
                     </div>
-                </section>
-
-                <section class="panel" style="border: 1px solid rgba(242, 63, 67, 0.2);">
-                    <h3 class="panel-title" style="color: var(--status-error);">Danger Zone Operations</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 20px;">Forcing a hot restart will execute a remote deployment container recycle sequence.</p>
-                    <button class="btn btn-danger" style="box-shadow: 0 0 10px rgba(242, 63, 67, 0.2);" onclick="alert('Hot restart feature requires Railway deployment token linkage.')">Execute Hot Restart Core Sequence</button>
                 </section>
             </div>
 
@@ -299,7 +330,7 @@
     </div>
 
     <script>
-        // ⚠️ EDIT THIS TO MATCH YOUR NEW RAILWAY APP PUBLIC DOMAIN NETWORKING LINK
+        // ⚠️ EDIT THIS TO MATCH YOUR RAILWAY PUBLIC ENVIRONMENT NETWORKING LINK
         const BACKEND_URL = "https://scoreybotv2-production.up.railway.app";
 
         function switchTab(tabId, element) {
@@ -312,147 +343,97 @@
 
             if (tabId === 'tab-commands') fetchCustomCommands();
             if (tabId === 'tab-streamers') fetchStreamers();
+            if (tabId === 'tab-modules') { fetchBannedWords(); fetchModerationLogs(); }
+            if (tabId === 'tab-community') fetchCommunitySettings();
         }
 
         function toggleCommandStyleUI() {
             const type = document.getElementById('commandType').value;
             const prefixContainer = document.getElementById('prefixSelectionContainer');
             const label = document.getElementById('triggerInputLabel');
-
             if (type === 'slash') {
                 prefixContainer.style.display = 'none';
-                label.innerText = "Slash Trigger (/name) - Lowercase, letters only without spaces";
+                label.innerText = "Slash Trigger (/name)";
             } else {
                 prefixContainer.style.display = 'block';
-                label.innerText = "Trigger Keyword (Do not include symbols)";
+                label.innerText = "Trigger Keyword";
             }
         }
 
-        // ==========================================
-        // BACKEND STREAMS INTERACTION LAYER
-        // ==========================================
+        // FETCH METADATA REPOSITORY PIPELINES
         async function fetchStreamers() {
             const container = document.getElementById('streamerListContainer');
             try {
                 const response = await fetch(`${BACKEND_URL}/api/streamers`);
                 const data = await response.json();
                 
-                const globalChannel = data.globalChannelId || "Not Configured";
-                document.getElementById('metric-default-channel').innerText = globalChannel;
+                document.getElementById('globalChannelId').value = data.globalChannelId || '';
+                document.getElementById('metric-default-channel').innerText = data.globalChannelId || "Not Configured";
                 
                 const streamers = data.streamers || {};
                 const usernames = Object.keys(streamers);
-                
                 document.getElementById('metric-streamers-count').innerText = usernames.length;
 
                 if (usernames.length === 0) {
-                    container.innerHTML = `<p style="color: var(--text-muted);">No streamers currently registered.</p>`;
+                    container.innerHTML = `<p style="color: var(--text-muted);">No streamers registered.</p>`;
                     return;
                 }
                 container.innerHTML = '';
                 usernames.forEach(name => {
-                    const customMsg = streamers[name].customMessage || "Default Template Active";
-                    const specificChannel = streamers[name].channelId ? `📍 Channel: ${streamers[name].channelId}` : "🌐 Global Default Channel";
+                    const info = streamers[name];
                     container.innerHTML += `
                         <div class="streamer-row">
                             <div>
-                                <h4>${name} <span style="font-size:0.75rem; color:var(--accent-blurple); margin-left:8px;">${specificChannel}</span></h4>
-                                <p style="font-size: 0.8rem; color: var(--text-muted); max-width: 500px; word-break: break-word; margin-top:4px;">${customMsg}</p>
+                                <h4>${name} <span style="font-size:0.75rem; color:var(--accent-blurple); margin-left:8px;">Color: ${info.color || '#6441a5'}</span></h4>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top:4px;">Ch: ${info.channelId || 'Default'} | Mention: ${info.roleId || 'None'}</p>
                             </div>
-                            <div style="font-size: 0.75rem; background-color: rgba(255,255,255,0.05); color: var(--text-muted); padding: 4px 10px; border-radius: 6px; font-weight: 700;">Active</div>
                         </div>`;
                 });
-            } catch (err) {
-                container.innerHTML = `<p style="color: var(--status-error);">Error communicating with server.</p>`;
-            }
+            } catch (err) { container.innerHTML = `<p style="color: var(--status-error);">Error connecting to host backend.</p>`; }
         }
 
         async function saveGlobalChannel() {
             const globalChannelId = document.getElementById('globalChannelId').value.trim();
             const secretPassword = document.getElementById('masterSecretPassword').value;
-
-            if (!globalChannelId || !secretPassword) {
-                alert("Please fill out the field and input your validation secret password under System Settings.");
-                return;
-            }
-
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/streamers/global-channel`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ globalChannelId, secretPassword })
-                });
-                if (response.ok) {
-                    alert("Global configuration target channel synced perfectly.");
-                    fetchStreamers();
-                } else {
-                    const out = await response.json(); alert(`Error: ${out.error}`);
-                }
-            } catch (e) { alert("Network sync exception."); }
+            const response = await fetch(`${BACKEND_URL}/api/streamers/global-channel`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ globalChannelId, secretPassword })
+            });
+            if (response.ok) { alert("Global default alert routing updated!"); fetchStreamers(); } else { alert("Failed authorization update link."); }
         }
 
         async function manageStreamer(actionType) {
             const twitchName = document.getElementById('twitchName').value.trim();
             const channelId = document.getElementById('streamerChannelId').value.trim();
+            const roleId = document.getElementById('streamerRoleId').value.trim();
+            const color = document.getElementById('streamerColor').value.trim();
             const customMessage = document.getElementById('customMessage').value.trim();
             const secretPassword = document.getElementById('masterSecretPassword').value;
 
-            if (!twitchName || !secretPassword) {
-                alert("Please complete required entries and provide administrative keys under System Settings.");
-                return;
-            }
-
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/streamers/manage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: actionType, twitchName, channelId, customMessage, secretPassword })
-                });
-                const result = await response.json();
-                if (response.ok) {
-                    alert(`Success: ${result.message}`);
-                    document.getElementById('twitchName').value = '';
-                    document.getElementById('streamerChannelId').value = '';
-                    document.getElementById('customMessage').value = '';
-                    fetchStreamers();
-                } else { alert(`Error: ${result.error}`); }
-            } catch (err) { alert("Network exception occurred."); }
+            const response = await fetch(`${BACKEND_URL}/api/streamers/manage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: actionType, twitchName, channelId, roleId, color, customMessage, secretPassword })
+            });
+            if (response.ok) { alert("Streamer settings aligned."); fetchStreamers(); } else { alert("Operation error."); }
         }
 
-        // ==========================================
-        // BACKEND COMMAND CONFIGURATION LAYER
-        // ==========================================
         async function fetchCustomCommands() {
             const container = document.getElementById('commandListContainer');
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/commands`);
-                const data = await response.json();
-                const commandKeys = Object.keys(data);
-
-                document.getElementById('metric-commands-count').innerText = commandKeys.length;
-
-                if (commandKeys.length === 0) {
-                    container.innerHTML = `<p style="color: var(--text-muted);">No custom rules mapped inside database yet.</p>`;
-                    return;
-                }
-
-                container.innerHTML = '';
-                commandKeys.forEach(key => {
-                    const cmd = data[key];
-                    const trackingDisplay = cmd.type === 'slash' ? `/${cmd.trigger}` : `${cmd.prefix}${cmd.trigger}`;
-                    container.innerHTML += `
-                        <div class="streamer-row">
-                            <div>
-                                <h4 style="color: var(--accent-blurple); font-family: monospace;">${trackingDisplay}</h4>
-                                <p style="font-size: 0.85rem; color: var(--text-muted);">${cmd.response}</p>
-                            </div>
-                            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.75rem;" onclick="deleteCustomCommand('${key}')">Delete</button>
-                        </div>
-                    `;
-                });
-            } catch (e) {
-                container.innerHTML = `<p style="color: var(--status-error);">Error fetching commands database matrix.</p>`;
-            }
+            const response = await fetch(`${BACKEND_URL}/api/commands`);
+            const data = await response.json();
+            const commandKeys = Object.keys(data);
+            document.getElementById('metric-commands-count').innerText = commandKeys.length;
+            container.innerHTML = '';
+            commandKeys.forEach(key => {
+                const cmd = data[key];
+                container.innerHTML += `
+                    <div class="streamer-row">
+                        <div><h4 style="font-family: monospace;">${cmd.type === 'slash' ? '/' : cmd.prefix}${cmd.trigger}</h4><p style="color:var(--text-muted); font-size:0.85rem;">${cmd.response}</p></div>
+                        <button class="btn btn-danger" style="padding:6px 12px; font-size:0.75rem;" onclick="deleteCustomCommand('${key}')">Delete</button>
+                    </div>`;
+            });
         }
 
         async function saveCustomCommand() {
@@ -462,65 +443,117 @@
             const responseText = document.getElementById('commandResponse').value.trim();
             const secretPassword = document.getElementById('masterSecretPassword').value;
 
-            if (!trigger || !responseText || !secretPassword) {
-                alert("Please fill out forms completely and supply your validation secret keys.");
-                return;
-            }
-
-            try {
-                const res = await fetch(`${BACKEND_URL}/api/commands/save`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type, prefix, trigger, response: responseText, secretPassword })
-                });
-                const out = await res.json();
-                if (res.ok) {
-                    alert("Success: Custom command configuration compiled cleanly.");
-                    document.getElementById('commandTrigger').value = '';
-                    document.getElementById('commandResponse').value = '';
-                    fetchCustomCommands();
-                } else { alert(`Error: ${out.error}`); }
-            } catch (e) { alert("Failed network synchronization connection."); }
+            await fetch(`${BACKEND_URL}/api/commands/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type, prefix, trigger, response: responseText, secretPassword })
+            });
+            fetchCustomCommands();
         }
 
-        async function deleteCustomCommand(commandKeyID) {
+        async function deleteCustomCommand(id) {
             const secretPassword = document.getElementById('masterSecretPassword').value;
-            if (!secretPassword) { return alert("Please supply administrative credentials password keys."); }
-
-            try {
-                const res = await fetch(`${BACKEND_URL}/api/commands/delete`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: commandKeyID, secretPassword })
-                });
-                if (res.ok) { fetchCustomCommands(); } else { const out = await res.json(); alert(out.error); }
-            } catch(e) { alert("Execution crash communicating with target host."); }
+            await fetch(`${BACKEND_URL}/api/commands/delete`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, secretPassword })
+            });
+            fetchCustomCommands();
         }
 
-        // ==========================================
-        // SYSTEM CONTROLS EXTENSION
-        // ==========================================
+        // AUTOMOD AND WORD FILTERS PIPELINES
+        async function fetchBannedWords() {
+            const container = document.getElementById('bannedWordsContainer');
+            const res = await fetch(`${BACKEND_URL}/api/automod/words`);
+            const words = await res.json();
+            container.innerHTML = '';
+            words.forEach(word => {
+                container.innerHTML += `<div class="badge">${word} <span onclick="removeBannedWord('${word}')">×</span></div>`;
+            });
+        }
+
+        async function addBannedWord() {
+            const word = document.getElementById('newBannedWord').value.trim();
+            const secretPassword = document.getElementById('masterSecretPassword').value;
+            await fetch(`${BACKEND_URL}/api/automod/words/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ word, secretPassword })
+            });
+            document.getElementById('newBannedWord').value = '';
+            fetchBannedWords();
+        }
+
+        async function removeBannedWord(word) {
+            const secretPassword = document.getElementById('masterSecretPassword').value;
+            await fetch(`${BACKEND_URL}/api/automod/words/remove`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ word, secretPassword })
+            });
+            fetchBannedWords();
+        }
+
+        async function fetchModerationLogs() {
+            const container = document.getElementById('moderationLogsContainer');
+            const res = await fetch(`${BACKEND_URL}/api/automod/logs`);
+            const data = await res.json();
+            document.getElementById('metric-violations-count').innerText = data.totalViolations || 0;
+            container.innerHTML = '';
+            if(!data.logs || data.logs.length === 0) { container.innerHTML = '<p style="color:var(--text-muted);">No recorded violations logs found.</p>'; return; }
+            data.logs.slice().reverse().forEach(log => {
+                container.innerHTML += `<div class="log-item">[${log.timestamp}] User ID: ${log.userId} triggered strike action in Guild: ${log.guildId}</div>`;
+            });
+        }
+
+        // COMMUNITY GATEWAY PERSISTENCE LAYERS
+        async function fetchCommunitySettings() {
+            const res = await fetch(`${BACKEND_URL}/api/community/config`);
+            const data = await res.json();
+            document.getElementById('welcomeChannelId').value = data.welcomeChannelId || '';
+            document.getElementById('welcomeMessage').value = data.welcomeMessage || '';
+            document.getElementById('leaveMessage').value = data.leaveMessage || '';
+        }
+
+        async function saveWelcomeSettings() {
+            const welcomeChannelId = document.getElementById('welcomeChannelId').value.trim();
+            const welcomeMessage = document.getElementById('welcomeMessage').value.trim();
+            const leaveMessage = document.getElementById('leaveMessage').value.trim();
+            const secretPassword = document.getElementById('masterSecretPassword').value;
+
+            await fetch(`${BACKEND_URL}/api/community/config`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ welcomeChannelId, welcomeMessage, leaveMessage, secretPassword })
+            });
+            alert("Community configuration alignments deployed.");
+        }
+
+        async function deployReactionRole() {
+            const channelId = document.getElementById('rrChannelId').value.trim();
+            const embedText = document.getElementById('rrEmbedText').value.trim();
+            const roleId = document.getElementById('rrRoleId').value.trim();
+            const buttonText = document.getElementById('rrButtonText').value.trim();
+            const secretPassword = document.getElementById('masterSecretPassword').value;
+
+            const res = await fetch(`${BACKEND_URL}/api/community/deploy-reaction-role`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ channelId, embedText, roleId, buttonText, secretPassword })
+            });
+            if(res.ok) alert("Reaction structure successfully built inside Guild channels.");
+        }
+
         async function updatePresence() {
             const text = document.getElementById('botPresenceText').value.trim();
             const type = document.getElementById('botPresenceType').value;
             const secretPassword = document.getElementById('masterSecretPassword').value;
-
-            if (!text || !secretPassword) {
-                alert("Please input status text and provide validation password keys.");
-                return;
-            }
-
-            try {
-                const res = await fetch(`${BACKEND_URL}/api/system/presence`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text, type, secretPassword })
-                });
-                if (res.ok) {
-                    alert("Bot status display updated across all shards successfully!");
-                    document.getElementById('botPresenceText').value = '';
-                } else { const out = await res.json(); alert(out.error); }
-            } catch (e) { alert("Error passing context to container."); }
+            await fetch(`${BACKEND_URL}/api/system/presence`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text, type, secretPassword })
+            });
+            alert("Bot Presence Synced!");
         }
 
         fetchStreamers();
