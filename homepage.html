@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNDERSCOREPOWER | Next-Gen Discord Automation</title>
+    <style>
+        :root {
+            --bg-main: #0a0a0e;
+            --bg-card: #12121a;
+            --text-light: #ffffff;
+            --text-muted: #8e9297;
+            --accent-orange: #ff6b00;
+            --accent-orange-hover: #e05e00;
+            --glow-orange: rgba(255, 107, 0, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .logo .white-part {
+            color: var(--text-light);
+        }
+
+        .logo .orange-part {
+            color: var(--accent-orange);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-light);
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 50px;
+        }
+
+        .hero-content {
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .hero-title span.white-text {
+            color: var(--text-light);
+        }
+
+        .hero-title span.orange-text {
+            color: var(--accent-orange);
+            text-shadow: 0 0 20px var(--glow-orange);
+        }
+
+        .hero-description {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-orange);
+            color: var(--text-light);
+            box-shadow: 0 4px 15px var(--glow-orange);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-orange-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-light);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-light);
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .hero-graphic {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Visual Element Showcase */
+        .mock-dashboard {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 480px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 50px rgba(255, 107, 0, 0.05);
+        }
+
+        .mock-header {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .dot.orange { background: var(--accent-orange); }
+
+        .mock-line {
+            height: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+        
+        .mock-line.short { width: 40%; }
+        .mock-line.medium { width: 75%; }
+        .mock-line.accent { background: rgba(255, 107, 0, 0.2); width: 60%; }
+
+        /* Features Grid */
+        .features {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 40px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 50px;
+            font-weight: 700;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 30px;
+            border-radius: 12px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 107, 0, 0.3);
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+            color: var(--accent-orange);
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .card-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding: 60px 20px;
+            }
+            .cta-group {
+                justify-content: center;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            nav {
+                padding: 20px;
+            }
+            .nav-links {
+                display: none; /* Simplifies mobile views */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <span class="white-part">Underscore</span><span class="orange-part">Power</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="/api/streamers">API Status</a></li>
+            <li><a href="index.html">Admin Panel</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="white-text">UNDERSCORE</span><span class="orange-text">POWER</span>
+            </h1>
+            <p class="hero-description">
+                The ultimate centralized command deck for your Discord community. Streamline live Twitch notifications, deploy custom slash integrations, and access precision engineering analytics seamlessly.
+            </p>
+            <div class="cta-group">
+                <a href="index.html" class="btn btn-primary">Open Admin Dashboard</a>
+                <a href="#features" class="btn btn-secondary">Explore Modules</a>
+            </div>
+        </div>
+        
+        <div class="hero-graphic">
+            <div class="mock-dashboard">
+                <div class="mock-header">
+                    <div class="dot orange"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+                <div class="mock-line short" style="background: rgba(255, 107, 0, 0.4);"></div>
+                <div class="mock-line medium"></div>
+                <div class="mock-line"></div>
+                <div class="mock-line accent"></div>
+                <div class="mock-line medium" style="margin-top: 30px;"></div>
+                <div class="mock-line short"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <h2 class="section-title">Engineered For Communities</h2>
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon">⚡</div>
+                <h3 class="card-title">Live Notification Pipeline</h3>
+                <p class="card-text">Route automated notifications dynamically. Customize display assets, role targeting arrays, and hex layouts across individual streamers.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">⚙️</div>
+                <h3 class="card-title">Dynamic Control Matrices</h3>
+                <p class="card-text">Build prefix scripts and standard application slash operations on demand directly from the live control array interface.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🛡️</div>
+                <h3 class="card-title">Intelligent Protection</h3>
+                <p class="card-text">Defend servers using highly adaptable cloud blocklists. Instantly log incidents to dashboard data maps for evaluation.</p>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
