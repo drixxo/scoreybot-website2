@@ -78,7 +78,7 @@
         .form-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted); }
         .form-input {
             width: 100%; padding: 12px; background-color: var(--bg-card); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 6px; color: white; font-size: 0.9rem;
+            border-radius: 6px; color: white; font-size: 0.9rem; outline: none;
         }
         
         .variable-guide {
@@ -147,24 +147,51 @@
                 <section class="panel">
                     <h3 class="panel-title">Tracked Streamer Registry</h3>
                     <div id="streamerListContainer">
-                        <p style="color: var(--text-muted);">Syncing registry tracking details from database endpoints...</p>
+                        <p style="color: var(--text-muted);">Syncing registry tracking details...</p>
                     </div>
                 </section>
             </div>
 
             <div id="tab-commands" class="tab-panel">
                 <section class="panel">
-                    <h3 class="panel-title">Custom Command Variables Mapping</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 15px;">Modify existing text layouts or add new custom chat parameters below.</p>
+                    <h3 class="panel-title">Deploy New Custom Command</h3>
+                    
                     <div class="form-group">
-                        <label>Trigger Command Name</label>
-                        <input type="text" class="form-input" placeholder="e.g. !discord">
+                        <label>Command Activation Method</label>
+                        <select id="commandType" class="form-input" onchange="toggleCommandStyleUI()">
+                            <option value="prefix">Standard Text Prefix Command (! or ?)</option>
+                            <option value="slash">Official Discord Slash Command (/)</option>
+                        </select>
                     </div>
+
+                    <div class="form-group" id="prefixSelectionContainer">
+                        <label>Choose Prefix Trigger</label>
+                        <select id="commandPrefix" class="form-input" style="width: 120px;">
+                            <option value="!">!</option>
+                            <option value="?">?</option>
+                        </select>
+                    </div>
+
                     <div class="form-group">
-                        <label>Bot Response Reply Output</label>
-                        <input type="text" class="form-input" placeholder="e.g. Join our server at discord.gg/example!">
+                        <label id="triggerInputLabel">Trigger Keyword (Do not include symbols)</label>
+                        <input type="text" id="commandTrigger" class="form-input" placeholder="e.g. website">
                     </div>
-                    <button class="btn btn-purple">Save Command Mapping</button>
+
+                    <div class="form-group">
+                        <label>Bot Action Response Output</label>
+                        <input type="text" id="commandResponse" class="form-input" placeholder="e.g. Check out our cool site at v2.scoreybot.app!">
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button class="btn btn-purple" onclick="saveCustomCommand()">Deploy Command Structure</button>
+                    </div>
+                </section>
+
+                <section class="panel">
+                    <h3 class="panel-title">Active Dynamic Command Matrix</h3>
+                    <div id="commandListContainer">
+                        <p style="color: var(--text-muted);">Synchronizing configuration matrices from cloud...</p>
+                    </div>
                 </section>
             </div>
 
@@ -192,7 +219,7 @@
                     <p style="color: var(--text-muted); margin-bottom: 20px;">Use this authentication matrix section to pass physical state instructions directly into the backend runtime container engine.</p>
                     <div class="form-group">
                         <label>Secret Master Admin Dashboard Key PIN</label>
-                        <input type="password" id="secretPassword" class="form-input" placeholder="Enter WEB_SECRET key string">
+                        <input type="password" id="masterSecretPassword" class="form-input" placeholder="Enter WEB_SECRET key string">
                     </div>
                 </section>
 
@@ -208,7 +235,7 @@
 
     <script>
         // ⚠️ EDIT THIS TO MATCH YOUR NEW RAILWAY APP PUBLIC DOMAIN NETWORKING LINK
-        const BACKEND_URL = "https://scoreybotv2-production.up.railway.app";
+        const BACKEND_URL = "https://your-bot-production.up.railway.app";
 
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
@@ -217,8 +244,28 @@
             document.getElementById(tabId).classList.add('active');
             element.classList.add('active');
             document.getElementById('page-title').innerText = element.innerText;
+
+            if (tabId === 'tab-commands') fetchCustomCommands();
+            if (tabId === 'tab-streamers') fetchStreamers();
         }
 
+        function toggleCommandStyleUI() {
+            const type = document.getElementById('commandType').value;
+            const prefixContainer = document.getElementById('prefixSelectionContainer');
+            const label = document.getElementById('triggerInputLabel');
+
+            if (type === 'slash') {
+                prefixContainer.style.display = 'none';
+                label.innerText = "Slash Trigger (/name) - Lowercase, letters only without spaces";
+            } else {
+                prefixContainer.style.display = 'block';
+                label.innerText = "Trigger Keyword (Do not include symbols)";
+            }
+        }
+
+        // ==========================================
+        // BACKEND STREAMS INTERACTION LAYER
+        // ==========================================
         async function fetchStreamers() {
             const container = document.getElementById('streamerListContainer');
             try {
@@ -227,7 +274,7 @@
                 const usernames = Object.keys(streamers);
                 
                 if (usernames.length === 0) {
-                    container.innerHTML = `<p style="color: var(--text-muted);">No streamers currently registered inside database.</p>`;
+                    container.innerHTML = `<p style="color: var(--text-muted);">No streamers currently registered.</p>`;
                     return;
                 }
                 container.innerHTML = '';
@@ -243,17 +290,17 @@
                         </div>`;
                 });
             } catch (err) {
-                container.innerHTML = `<p style="color: var(--status-error);">Error communicating with Railway backend server endpoints.</p>`;
+                container.innerHTML = `<p style="color: var(--status-error);">Error communicating with server.</p>`;
             }
         }
 
         async function manageStreamer(actionType) {
             const twitchName = document.getElementById('twitchName').value.trim();
             const customMessage = document.getElementById('customMessage').value.trim();
-            const secretPassword = document.getElementById('secretPassword').value;
+            const secretPassword = document.getElementById('masterSecretPassword').value;
 
             if (!twitchName || !secretPassword) {
-                alert("Please type a name and provide your secret authentication token inside the System Settings tab.");
+                alert("Please complete required entries and provide administrative authentication keys under System Settings.");
                 return;
             }
 
@@ -270,7 +317,83 @@
                     document.getElementById('customMessage').value = '';
                     fetchStreamers();
                 } else { alert(`Error: ${result.error}`); }
-            } catch (err) { alert("Network error connecting to runtime platform backend."); }
+            } catch (err) { alert("Network exception occurred."); }
+        }
+
+        // ==========================================
+        // BACKEND COMMAND CONFIGURATION LAYER
+        // ==========================================
+        async function fetchCustomCommands() {
+            const container = document.getElementById('commandListContainer');
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/commands`);
+                const data = await response.json();
+                const commandKeys = Object.keys(data);
+
+                if (commandKeys.length === 0) {
+                    container.innerHTML = `<p style="color: var(--text-muted);">No custom rules mapped inside database yet.</p>`;
+                    return;
+                }
+
+                container.innerHTML = '';
+                commandKeys.forEach(key => {
+                    const cmd = data[key];
+                    const trackingDisplay = cmd.type === 'slash' ? `/${cmd.trigger}` : `${cmd.prefix}${cmd.trigger}`;
+                    container.innerHTML += `
+                        <div class="streamer-row">
+                            <div>
+                                <h4 style="color: var(--accent-blurple); font-family: monospace;">${trackingDisplay}</h4>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">${cmd.response}</p>
+                            </div>
+                            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.75rem;" onclick="deleteCustomCommand('${key}')">Delete</button>
+                        </div>
+                    `;
+                });
+            } catch (e) {
+                container.innerHTML = `<p style="color: var(--status-error);">Error fetching commands database matrix.</p>`;
+            }
+        }
+
+        async function saveCustomCommand() {
+            const type = document.getElementById('commandType').value;
+            const prefix = document.getElementById('commandPrefix').value;
+            const trigger = document.getElementById('commandTrigger').value.trim().toLowerCase();
+            const responseText = document.getElementById('commandResponse').value.trim();
+            const secretPassword = document.getElementById('masterSecretPassword').value;
+
+            if (!trigger || !responseText || !secretPassword) {
+                alert("Please input custom trigger requirements, action response texts, and save your WEB_SECRET inside System Settings.");
+                return;
+            }
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/commands/save`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type, prefix, trigger, response: responseText, secretPassword })
+                });
+                const out = await res.json();
+                if (res.ok) {
+                    alert("Success: Custom command deployment mapped cleanly.");
+                    document.getElementById('commandTrigger').value = '';
+                    document.getElementById('commandResponse').value = '';
+                    fetchCustomCommands();
+                } else { alert(`Error: ${out.error}`); }
+            } catch (e) { alert("Failed network synchronization connection."); }
+        }
+
+        async function deleteCustomCommand(commandKeyID) {
+            const secretPassword = document.getElementById('masterSecretPassword').value;
+            if (!secretPassword) { return alert("Please supply administrative credentials validation password keys under System Settings."); }
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/commands/delete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: commandKeyID, secretPassword })
+                });
+                if (res.ok) { fetchCustomCommands(); } else { const out = await res.json(); alert(out.error); }
+            } catch(e) { alert("Execution crash communicating with target host."); }
         }
 
         fetchStreamers();
