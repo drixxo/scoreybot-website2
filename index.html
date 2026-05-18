@@ -3,560 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScoreyBot | Ultimate Admin Center</title>
+    <title>UNDERSCOREPOWER | Next-Gen Discord Automation</title>
     <style>
         :root {
-            --bg-primary: #0f0f13;
-            --bg-secondary: #181820;
-            --bg-card: #21212b;
-            --accent-purple: #9146FF;
-            --accent-blurple: #5865F2;
-            --text-main: #f5f5fa;
-            --text-muted: #949ba4;
-            --status-online: #23a55a;
-            --status-error: #f23f43;
-            --status-warning: #f0b232;
+            --bg-main: #0a0a0e;
+            --bg-card: #12121a;
+            --text-light: #ffffff;
+            --text-muted: #8e9297;
+            --accent-orange: #ff6b00;
+            --accent-orange-hover: #e05e00;
+            --glow-orange: rgba(255, 107, 0, 0.15);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-main);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
             display: flex;
-            height: 100vh;
-            overflow: hidden;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .sidebar {
-            width: 260px;
-            background-color: var(--bg-secondary);
-            border-right: 2px solid var(--bg-card);
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .logo .white-part {
+            color: var(--text-light);
+        }
+
+        .logo .orange-part {
+            color: var(--accent-orange);
+        }
+
+        .nav-links {
             display: flex;
-            flex-direction: column;
-            padding: 20px;
+            gap: 30px;
+            list-style: none;
         }
 
-        .sidebar-brand { font-size: 1.3rem; font-weight: 700; margin-bottom: 40px; padding-left: 10px; }
-        .sidebar-brand span { color: var(--accent-purple); }
-
-        .nav-menu { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
-
-        .nav-item {
-            padding: 12px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;
-            color: var(--text-muted); transition: all 0.2s ease;
-        }
-        .nav-item:hover { background-color: rgba(255, 255, 255, 0.03); color: var(--text-main); }
-        .nav-item.active { background-color: var(--accent-blurple); color: white; }
-
-        .workspace { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
-
-        header {
-            background-color: var(--bg-secondary); padding: 20px 40px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid var(--bg-card);
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
         }
 
-        .status-badge {
-            display: flex; align-items: center; background-color: var(--bg-card);
-            padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
-        }
-        .status-dot {
-            width: 8px; height: 8px; background-color: var(--status-online);
-            border-radius: 50%; margin-right: 8px; box-shadow: 0 0 8px var(--status-online);
+        .nav-links a:hover {
+            color: var(--text-light);
         }
 
-        .content-body { padding: 40px; max-width: 1000px; width: 100%; margin: 0 auto; }
-
-        .tab-panel { display: none; }
-        .tab-panel.active { display: block; }
-
-        .panel { background-color: var(--bg-secondary); border-radius: 14px; padding: 30px; margin-bottom: 30px; box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
-        .panel-title { font-size: 1.2rem; margin-bottom: 20px; font-weight: 600; border-bottom: 1px solid var(--bg-card); padding-bottom: 12px; }
-
-        .metrics-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px;
+        /* Hero Section */
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 50px;
         }
-        .metric-card {
-            background-color: var(--bg-secondary); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-blurple); box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
-        .metric-card h5 { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
-        .metric-card p { font-size: 1.4rem; font-weight: 700; color: white; margin-top: 5px; }
 
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted); }
-        .form-input {
-            width: 100%; padding: 12px; background-color: var(--bg-card); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 6px; color: white; font-size: 0.9rem; outline: none;
+        .hero-content {
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .hero-title span.white-text {
+            color: var(--text-light);
+        }
+
+        .hero-title span.orange-text {
+            color: var(--accent-orange);
+            text-shadow: 0 0 20px var(--glow-orange);
+        }
+
+        .hero-description {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-orange);
+            color: var(--text-light);
+            box-shadow: 0 4px 15px var(--glow-orange);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-orange-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-light);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-light);
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .hero-graphic {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Visual Element Showcase */
+        .mock-dashboard {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 480px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 50px rgba(255, 107, 0, 0.05);
+        }
+
+        .mock-header {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .dot.orange { background: var(--accent-orange); }
+
+        .mock-line {
+            height: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+            margin-bottom: 12px;
         }
         
-        .variable-guide {
-            background-color: var(--bg-card); padding: 12px; border-radius: 6px; 
-            margin-top: 5px; font-size: 0.8rem; border-left: 3px solid var(--accent-purple);
-        }
-        .variable-guide code { background: rgba(0,0,0,0.3); padding: 2px 5px; border-radius: 4px; color: #ff79c6; }
+        .mock-line.short { width: 40%; }
+        .mock-line.medium { width: 75%; }
+        .mock-line.accent { background: rgba(255, 107, 0, 0.2); width: 60%; }
 
-        .btn { padding: 12px 24px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; color: white; transition: background 0.2s; }
-        .btn-purple { background-color: var(--accent-purple); }
-        .btn-purple:hover { background-color: #772ce8; }
-        .btn-blurple { background-color: var(--accent-blurple); }
-        .btn-blurple:hover { background-color: #4752c4; }
-        .btn-danger { background-color: var(--status-error); }
-
-        .streamer-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 14px 16px; background-color: var(--bg-card); border-radius: 8px; margin-bottom: 12px;
+        /* Features Grid */
+        .features {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 40px;
         }
 
-        .log-item {
-            padding: 12px; background-color: var(--bg-card); border-radius: 6px; margin-bottom: 8px;
-            font-family: monospace; font-size: 0.85rem; border-left: 4px solid var(--status-warning);
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 50px;
+            font-weight: 700;
         }
 
-        .badge-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .badge { background-color: var(--bg-card); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; }
-        .badge span { cursor: pointer; color: var(--status-error); font-weight: bold; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 30px;
+            border-radius: 12px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 107, 0, 0.3);
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+            color: var(--accent-orange);
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .card-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding: 60px 20px;
+            }
+            .cta-group {
+                justify-content: center;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            nav {
+                padding: 20px;
+            }
+            .nav-links {
+                display: none; /* Simplifies mobile views */
+            }
+        }
     </style>
 </head>
 <body>
 
-    <nav class="sidebar">
-        <div class="sidebar-brand">Scorey<span>Bot</span> Panel</div>
-        <div class="nav-menu">
-            <div class="nav-item active" onclick="switchTab('tab-streamers', this)">Stream Alerts</div>
-            <div class="nav-item" onclick="switchTab('tab-commands', this)">Edit Commands</div>
-            <div class="nav-item" onclick="switchTab('tab-modules', this)">AutoMod Modules</div>
-            <div class="nav-item" onclick="switchTab('tab-community', this)">Community Tools</div>
-            <div class="nav-item" onclick="switchTab('tab-system', this)">System Settings</div>
+    <nav>
+        <div class="logo">
+            <span class="white-part">Underscore</span><span class="orange-part">Power</span>
         </div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="/api/streamers">API Status</a></li>
+            <li><a href="index.html">Admin Panel</a></li>
+        </ul>
     </nav>
 
-    <div class="workspace">
-        <header>
-            <h2 id="page-title">Twitch Notification Network</h2>
-            <div class="status-badge"><div class="status-dot"></div>SYSTEM LIVE</div>
-        </header>
-
-        <div class="content-body">
-
-            <div id="tab-streamers" class="tab-panel active">
-                <div class="metrics-grid">
-                    <div class="metric-card" style="border-left-color: var(--accent-purple);">
-                        <h5>Tracked Streams</h5>
-                        <p id="metric-streamers-count">0</p>
-                    </div>
-                    <div class="metric-card" style="border-left-color: var(--accent-blurple);">
-                        <h5>Custom Cmds</h5>
-                        <p id="metric-commands-count">0</p>
-                    </div>
-                    <div class="metric-card" style="border-left-color: var(--status-warning);">
-                        <h5>Total Violations</h5>
-                        <p id="metric-violations-count">0</p>
-                    </div>
-                    <div class="metric-card" style="border-left-color: var(--status-online);">
-                        <h5>Alert Shards</h5>
-                        <p>Active</p>
-                    </div>
-                </div>
-
-                <section class="panel">
-                    <h3 class="panel-title">Configure Global Default Alert Channel</h3>
-                    <div class="form-group">
-                        <label>Discord Channel ID</label>
-                        <input type="text" id="globalChannelId" class="form-input" placeholder="e.g. 112233445566778899">
-                    </div>
-                    <button class="btn btn-blurple" onclick="saveGlobalChannel()">Update Default Channel</button>
-                </section>
-
-                <section class="panel">
-                    <h3 class="panel-title">Add / Edit Stream Alerts</h3>
-                    <div class="form-group">
-                        <label>Twitch Username</label>
-                        <input type="text" id="twitchName" class="form-input" placeholder="e.g. shroud">
-                    </div>
-                    <div class="form-group">
-                        <label>Custom Notification Channel ID (Optional)</label>
-                        <input type="text" id="streamerChannelId" class="form-input" placeholder="Leave blank to use global default channel">
-                    </div>
-                    <div class="form-group">
-                        <label>Role ID to Mention (Optional - Do not use symbols)</label>
-                        <input type="text" id="streamerRoleId" class="form-input" placeholder="e.g. 987654321012345678">
-                    </div>
-                    <div class="form-group">
-                        <label>Embed Side Border Accent Color (Hex Format)</label>
-                        <input type="text" id="streamerColor" class="form-input" placeholder="#6441a5">
-                    </div>
-                    <div class="form-group">
-                        <label>Notification Template (Optional)</label>
-                        <input type="text" id="customMessage" class="form-input" placeholder="🔔 {user} is live streaming {game}! Go watch: {link}">
-                    </div>
-                    <div style="display: flex; gap: 10px; margin-top: 20px;">
-                        <button class="btn btn-purple" style="background-color: var(--status-online);" onclick="manageStreamer('add')">Save / Update Streamer</button>
-                        <button class="btn btn-danger" onclick="manageStreamer('remove')">Remove Streamer</button>
-                    </div>
-                </section>
-
-                <section class="panel">
-                    <h3 class="panel-title">Tracked Streamer Registry</h3>
-                    <div id="streamerListContainer"></div>
-                </section>
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="white-text">UNDERSCORE</span><span class="orange-text">POWER</span>
+            </h1>
+            <p class="hero-description">
+                The ultimate centralized command deck for your Discord community. Streamline live Twitch notifications, deploy custom slash integrations, and access precision engineering analytics seamlessly.
+            </p>
+            <div class="cta-group">
+                <a href="index.html" class="btn btn-primary">Open Admin Dashboard</a>
+                <a href="#features" class="btn btn-secondary">Explore Modules</a>
             </div>
-
-            <div id="tab-commands" class="tab-panel">
-                <section class="panel">
-                    <h3 class="panel-title">Deploy New Custom Command</h3>
-                    <div class="form-group">
-                        <label>Command Type</label>
-                        <select id="commandType" class="form-input" onchange="toggleCommandStyleUI()">
-                            <option value="prefix">Standard Text Prefix Command (! or ?)</option>
-                            <option value="slash">Official Discord Slash Command (/)</option>
-                        </select>
-                    </div>
-                    <div class="form-group" id="prefixSelectionContainer">
-                        <label>Choose Prefix Trigger</label>
-                        <select id="commandPrefix" class="form-input" style="width: 120px;">
-                            <option value="!">!</option>
-                            <option value="?">?</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label id="triggerInputLabel">Trigger Keyword</label>
-                        <input type="text" id="commandTrigger" class="form-input" placeholder="e.g. website">
-                    </div>
-                    <div class="form-group">
-                        <label>Bot Action Response Output</label>
-                        <input type="text" id="commandResponse" class="form-input" placeholder="Check out our site at scoreybot.app!">
-                    </div>
-                    <button class="btn btn-purple" onclick="saveCustomCommand()">Deploy Command Structure</button>
-                </section>
-
-                <section class="panel">
-                    <h3 class="panel-title">Active Dynamic Command Matrix</h3>
-                    <div id="commandListContainer"></div>
-                </section>
-            </div>
-
-            <div id="tab-modules" class="tab-panel">
-                <section class="panel">
-                    <h3 class="panel-title">Blacklisted Phrases Filter</h3>
-                    <div class="form-group">
-                        <label>Add New Term / Sentence To Blocklist</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="newBannedWord" class="form-input" placeholder="Type word/phrase here">
-                            <button class="btn btn-purple" onclick="addBannedWord()">Block Phrase</button>
-                        </div>
-                    </div>
-                    <div class="badge-list" id="bannedWordsContainer"></div>
-                </section>
-
-                <section class="panel">
-                    <h3 class="panel-title">Live Moderation Audit Stream</h3>
-                    <div id="moderationLogsContainer" style="max-height: 300px; overflow-y: auto;">
-                        <p style="color: var(--text-muted);">Awaiting network synchronization updates...</p>
-                    </div>
-                </section>
-            </div>
-
-            <div id="tab-community" class="tab-panel">
-                <section class="panel">
-                    <h3 class="panel-title">Welcome & Leave Gateway Settings</h3>
-                    <div class="form-group">
-                        <label>Welcome System Target Channel ID</label>
-                        <input type="text" id="welcomeChannelId" class="form-input" placeholder="e.g. 112233445566778899">
-                    </div>
-                    <div class="form-group">
-                        <label>Welcome Member Message Notification</label>
-                        <input type="text" id="welcomeMessage" class="form-input" placeholder="Welcome {user} to the server! You are member #{count}!">
-                    </div>
-                    <div class="form-group">
-                        <label>Leave Member Message Notification</label>
-                        <input type="text" id="leaveMessage" class="form-input" placeholder="{user} just departed the server.">
-                    </div>
-                    <button class="btn btn-purple" onclick="saveWelcomeSettings()">Save Gateway Configurations</button>
-                </section>
-
-                <section class="panel">
-                    <h3 class="panel-title">Reaction Role Button Setup</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 15px;">Sends a message containing an interactive click-button giving roles directly to users.</p>
-                    <div class="form-group">
-                        <label>Destination Channel ID</label>
-                        <input type="text" id="rrChannelId" class="form-input" placeholder="e.g. 112233445566778899">
-                    </div>
-                    <div class="form-group">
-                        <label>Embed Description Instructions Content Text</label>
-                        <input type="text" id="rrEmbedText" class="form-input" placeholder="Click the button below to claim the Announcements role!">
-                    </div>
-                    <div class="form-group">
-                        <label>Role ID To Grant On Click</label>
-                        <input type="text" id="rrRoleId" class="form-input" placeholder="e.g. 987654321012345678">
-                    </div>
-                    <div class="form-group">
-                        <label>Interactive Button Display Label Text</label>
-                        <input type="text" id="rrButtonText" class="form-input" placeholder="Claim Role">
-                    </div>
-                    <button class="btn btn-blurple" onclick="deployReactionRole()">Deploy Active Reaction Embed</button>
-                </section>
-            </div>
-
-            <div id="tab-system" class="tab-panel">
-                <section class="panel">
-                    <h3 class="panel-title">Bot Status Presentation Presence</h3>
-                    <div class="form-group">
-                        <label>Activity Display Text</label>
-                        <input type="text" id="botPresenceText" class="form-input" placeholder="e.g. over the server">
-                    </div>
-                    <div class="form-group">
-                        <label>Activity Action Type</label>
-                        <select id="botPresenceType" class="form-input">
-                            <option value="Watching">Watching</option>
-                            <option value="Playing">Playing</option>
-                            <option value="Listening">Listening</option>
-                            <option value="Competing">Competing</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-blurple" onclick="updatePresence()">Update Status Activity</button>
-                </section>
-
-                <section class="panel">
-                    <h3 class="panel-title">Authentication Matrix</h3>
-                    <div class="form-group">
-                        <label>Secret Admin Dashboard Key (WEB_SECRET)</label>
-                        <input type="password" id="masterSecretPassword" class="form-input" placeholder="Enter WEB_SECRET key string">
-                    </div>
-                </section>
-            </div>
-
         </div>
-    </div>
+        
+        <div class="hero-graphic">
+            <div class="mock-dashboard">
+                <div class="mock-header">
+                    <div class="dot orange"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+                <div class="mock-line short" style="background: rgba(255, 107, 0, 0.4);"></div>
+                <div class="mock-line medium"></div>
+                <div class="mock-line"></div>
+                <div class="mock-line accent"></div>
+                <div class="mock-line medium" style="margin-top: 30px;"></div>
+                <div class="mock-line short"></div>
+            </div>
+        </div>
+    </section>
 
-    <script>
-        // ⚠️ EDIT THIS TO MATCH YOUR RAILWAY PUBLIC ENVIRONMENT NETWORKING LINK
-        const BACKEND_URL = "https://scoreybotv2-production.up.railway.app";
+    <section class="features" id="features">
+        <h2 class="section-title">Engineered For Communities</h2>
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon">⚡</div>
+                <h3 class="card-title">Live Notification Pipeline</h3>
+                <p class="card-text">Route automated notifications dynamically. Customize display assets, role targeting arrays, and hex layouts across individual streamers.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">⚙️</div>
+                <h3 class="card-title">Dynamic Control Matrices</h3>
+                <p class="card-text">Build prefix scripts and standard application slash operations on demand directly from the live control array interface.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🛡️</div>
+                <h3 class="card-title">Intelligent Protection</h3>
+                <p class="card-text">Defend servers using highly adaptable cloud blocklists. Instantly log incidents to dashboard data maps for evaluation.</p>
+            </div>
+        </div>
+    </section>
 
-        function switchTab(tabId, element) {
-            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            
-            document.getElementById(tabId).classList.add('active');
-            element.classList.add('active');
-            document.getElementById('page-title').innerText = element.innerText;
-
-            if (tabId === 'tab-commands') fetchCustomCommands();
-            if (tabId === 'tab-streamers') fetchStreamers();
-            if (tabId === 'tab-modules') { fetchBannedWords(); fetchModerationLogs(); }
-            if (tabId === 'tab-community') fetchCommunitySettings();
-        }
-
-        function toggleCommandStyleUI() {
-            const type = document.getElementById('commandType').value;
-            const prefixContainer = document.getElementById('prefixSelectionContainer');
-            const label = document.getElementById('triggerInputLabel');
-            if (type === 'slash') {
-                prefixContainer.style.display = 'none';
-                label.innerText = "Slash Trigger (/name)";
-            } else {
-                prefixContainer.style.display = 'block';
-                label.innerText = "Trigger Keyword";
-            }
-        }
-
-        // FETCH METADATA REPOSITORY PIPELINES
-        async function fetchStreamers() {
-            const container = document.getElementById('streamerListContainer');
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/streamers`);
-                const data = await response.json();
-                
-                document.getElementById('globalChannelId').value = data.globalChannelId || '';
-                document.getElementById('metric-default-channel').innerText = data.globalChannelId || "Not Configured";
-                
-                const streamers = data.streamers || {};
-                const usernames = Object.keys(streamers);
-                document.getElementById('metric-streamers-count').innerText = usernames.length;
-
-                if (usernames.length === 0) {
-                    container.innerHTML = `<p style="color: var(--text-muted);">No streamers registered.</p>`;
-                    return;
-                }
-                container.innerHTML = '';
-                usernames.forEach(name => {
-                    const info = streamers[name];
-                    container.innerHTML += `
-                        <div class="streamer-row">
-                            <div>
-                                <h4>${name} <span style="font-size:0.75rem; color:var(--accent-blurple); margin-left:8px;">Color: ${info.color || '#6441a5'}</span></h4>
-                                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top:4px;">Ch: ${info.channelId || 'Default'} | Mention: ${info.roleId || 'None'}</p>
-                            </div>
-                        </div>`;
-                });
-            } catch (err) { container.innerHTML = `<p style="color: var(--status-error);">Error connecting to host backend.</p>`; }
-        }
-
-        async function saveGlobalChannel() {
-            const globalChannelId = document.getElementById('globalChannelId').value.trim();
-            const secretPassword = document.getElementById('masterSecretPassword').value;
-            const response = await fetch(`${BACKEND_URL}/api/streamers/global-channel`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ globalChannelId, secretPassword })
-            });
-            if (response.ok) { alert("Global default alert routing updated!"); fetchStreamers(); } else { alert("Failed authorization update link."); }
-        }
-
-        async function manageStreamer(actionType) {
-            const twitchName = document.getElementById('twitchName').value.trim();
-            const channelId = document.getElementById('streamerChannelId').value.trim();
-            const roleId = document.getElementById('streamerRoleId').value.trim();
-            const color = document.getElementById('streamerColor').value.trim();
-            const customMessage = document.getElementById('customMessage').value.trim();
-            const secretPassword = document.getElementById('masterSecretPassword').value;
-
-            const response = await fetch(`${BACKEND_URL}/api/streamers/manage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: actionType, twitchName, channelId, roleId, color, customMessage, secretPassword })
-            });
-            if (response.ok) { alert("Streamer settings aligned."); fetchStreamers(); } else { alert("Operation error."); }
-        }
-
-        async function fetchCustomCommands() {
-            const container = document.getElementById('commandListContainer');
-            const response = await fetch(`${BACKEND_URL}/api/commands`);
-            const data = await response.json();
-            const commandKeys = Object.keys(data);
-            document.getElementById('metric-commands-count').innerText = commandKeys.length;
-            container.innerHTML = '';
-            commandKeys.forEach(key => {
-                const cmd = data[key];
-                container.innerHTML += `
-                    <div class="streamer-row">
-                        <div><h4 style="font-family: monospace;">${cmd.type === 'slash' ? '/' : cmd.prefix}${cmd.trigger}</h4><p style="color:var(--text-muted); font-size:0.85rem;">${cmd.response}</p></div>
-                        <button class="btn btn-danger" style="padding:6px 12px; font-size:0.75rem;" onclick="deleteCustomCommand('${key}')">Delete</button>
-                    </div>`;
-            });
-        }
-
-        async function saveCustomCommand() {
-            const type = document.getElementById('commandType').value;
-            const prefix = document.getElementById('commandPrefix').value;
-            const trigger = document.getElementById('commandTrigger').value.trim().toLowerCase();
-            const responseText = document.getElementById('commandResponse').value.trim();
-            const secretPassword = document.getElementById('masterSecretPassword').value;
-
-            await fetch(`${BACKEND_URL}/api/commands/save`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type, prefix, trigger, response: responseText, secretPassword })
-            });
-            fetchCustomCommands();
-        }
-
-        async function deleteCustomCommand(id) {
-            const secretPassword = document.getElementById('masterSecretPassword').value;
-            await fetch(`${BACKEND_URL}/api/commands/delete`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, secretPassword })
-            });
-            fetchCustomCommands();
-        }
-
-        // AUTOMOD AND WORD FILTERS PIPELINES
-        async function fetchBannedWords() {
-            const container = document.getElementById('bannedWordsContainer');
-            const res = await fetch(`${BACKEND_URL}/api/automod/words`);
-            const words = await res.json();
-            container.innerHTML = '';
-            words.forEach(word => {
-                container.innerHTML += `<div class="badge">${word} <span onclick="removeBannedWord('${word}')">×</span></div>`;
-            });
-        }
-
-        async function addBannedWord() {
-            const word = document.getElementById('newBannedWord').value.trim();
-            const secretPassword = document.getElementById('masterSecretPassword').value;
-            await fetch(`${BACKEND_URL}/api/automod/words/add`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ word, secretPassword })
-            });
-            document.getElementById('newBannedWord').value = '';
-            fetchBannedWords();
-        }
-
-        async function removeBannedWord(word) {
-            const secretPassword = document.getElementById('masterSecretPassword').value;
-            await fetch(`${BACKEND_URL}/api/automod/words/remove`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ word, secretPassword })
-            });
-            fetchBannedWords();
-        }
-
-        async function fetchModerationLogs() {
-            const container = document.getElementById('moderationLogsContainer');
-            const res = await fetch(`${BACKEND_URL}/api/automod/logs`);
-            const data = await res.json();
-            document.getElementById('metric-violations-count').innerText = data.totalViolations || 0;
-            container.innerHTML = '';
-            if(!data.logs || data.logs.length === 0) { container.innerHTML = '<p style="color:var(--text-muted);">No recorded violations logs found.</p>'; return; }
-            data.logs.slice().reverse().forEach(log => {
-                container.innerHTML += `<div class="log-item">[${log.timestamp}] User ID: ${log.userId} triggered strike action in Guild: ${log.guildId}</div>`;
-            });
-        }
-
-        // COMMUNITY GATEWAY PERSISTENCE LAYERS
-        async function fetchCommunitySettings() {
-            const res = await fetch(`${BACKEND_URL}/api/community/config`);
-            const data = await res.json();
-            document.getElementById('welcomeChannelId').value = data.welcomeChannelId || '';
-            document.getElementById('welcomeMessage').value = data.welcomeMessage || '';
-            document.getElementById('leaveMessage').value = data.leaveMessage || '';
-        }
-
-        async function saveWelcomeSettings() {
-            const welcomeChannelId = document.getElementById('welcomeChannelId').value.trim();
-            const welcomeMessage = document.getElementById('welcomeMessage').value.trim();
-            const leaveMessage = document.getElementById('leaveMessage').value.trim();
-            const secretPassword = document.getElementById('masterSecretPassword').value;
-
-            await fetch(`${BACKEND_URL}/api/community/config`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ welcomeChannelId, welcomeMessage, leaveMessage, secretPassword })
-            });
-            alert("Community configuration alignments deployed.");
-        }
-
-        async function deployReactionRole() {
-            const channelId = document.getElementById('rrChannelId').value.trim();
-            const embedText = document.getElementById('rrEmbedText').value.trim();
-            const roleId = document.getElementById('rrRoleId').value.trim();
-            const buttonText = document.getElementById('rrButtonText').value.trim();
-            const secretPassword = document.getElementById('masterSecretPassword').value;
-
-            const res = await fetch(`${BACKEND_URL}/api/community/deploy-reaction-role`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ channelId, embedText, roleId, buttonText, secretPassword })
-            });
-            if(res.ok) alert("Reaction structure successfully built inside Guild channels.");
-        }
-
-        async function updatePresence() {
-            const text = document.getElementById('botPresenceText').value.trim();
-            const type = document.getElementById('botPresenceType').value;
-            const secretPassword = document.getElementById('masterSecretPassword').value;
-            await fetch(`${BACKEND_URL}/api/system/presence`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text, type, secretPassword })
-            });
-            alert("Bot Presence Synced!");
-        }
-
-        fetchStreamers();
-    </script>
 </body>
 </html>
