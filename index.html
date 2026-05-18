@@ -28,7 +28,6 @@
             overflow: hidden;
         }
 
-        /* Sidebar Navigation Menu */
         .sidebar {
             width: 260px;
             background-color: var(--bg-secondary);
@@ -38,52 +37,23 @@
             padding: 20px;
         }
 
-        .sidebar-brand {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 40px;
-            padding-left: 10px;
-        }
+        .sidebar-brand { font-size: 1.3rem; font-weight: 700; margin-bottom: 40px; padding-left: 10px; }
         .sidebar-brand span { color: var(--accent-purple); }
 
-        .nav-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            flex-grow: 1;
-        }
+        .nav-menu { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
 
         .nav-item {
-            padding: 12px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            color: var(--text-muted);
-            transition: all 0.2s ease;
+            padding: 12px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;
+            color: var(--text-muted); transition: all 0.2s ease;
         }
-        .nav-item:hover {
-            background-color: rgba(255, 255, 255, 0.03);
-            color: var(--text-main);
-        }
-        .nav-item.active {
-            background-color: var(--accent-blurple);
-            color: white;
-        }
+        .nav-item:hover { background-color: rgba(255, 255, 255, 0.03); color: var(--text-main); }
+        .nav-item.active { background-color: var(--accent-blurple); color: white; }
 
-        /* Main Workspace Content Area */
-        .workspace {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
+        .workspace { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
 
         header {
-            background-color: var(--bg-secondary);
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background-color: var(--bg-secondary); padding: 20px 40px;
+            display: flex; justify-content: space-between; align-items: center;
             border-bottom: 2px solid var(--bg-card);
         }
 
@@ -98,20 +68,25 @@
 
         .content-body { padding: 40px; max-width: 1000px; width: 100%; margin: 0 auto; }
 
-        /* SPA Tab Panel Visibility Controls */
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
         .panel { background-color: var(--bg-secondary); border-radius: 14px; padding: 30px; margin-bottom: 30px; box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
         .panel-title { font-size: 1.2rem; margin-bottom: 20px; font-weight: 600; border-bottom: 1px solid var(--bg-card); padding-bottom: 12px; }
 
-        /* Forms UI */
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted); }
         .form-input {
             width: 100%; padding: 12px; background-color: var(--bg-card); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 6px; color: white; font-size: 0.9rem;
         }
+        
+        .variable-guide {
+            background-color: var(--bg-card); padding: 12px; border-radius: 6px; 
+            margin-top: 5px; font-size: 0.8rem; border-left: 3px solid var(--accent-purple);
+        }
+        .variable-guide code { background: rgba(0,0,0,0.3); padding: 2px 5px; border-radius: 4px; color: #ff79c6; }
+
         .btn { padding: 12px 24px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; color: white; }
         .btn-purple { background-color: var(--accent-purple); }
         .btn-danger { background-color: var(--status-error); }
@@ -121,7 +96,6 @@
             padding: 14px 16px; background-color: var(--bg-card); border-radius: 8px; margin-bottom: 12px;
         }
 
-        /* Toggle Switches Layout for Modules Component */
         .toggle-row {
             display: flex; justify-content: space-between; align-items: center;
             padding: 16px 0; border-bottom: 1px solid var(--bg-card);
@@ -156,8 +130,16 @@
                         <label>Twitch Username</label>
                         <input type="text" id="twitchName" class="form-input" placeholder="e.g. shroud">
                     </div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn btn-purple" style="background-color: var(--status-online);" onclick="manageStreamer('add')">Add Streamer</button>
+                    <div class="form-group">
+                        <label>Notification Template (Optional for adding/updating)</label>
+                        <input type="text" id="customMessage" class="form-input" placeholder="e.g. 🔔 {user} is live streaming {game}! Go watch: {link}">
+                        <div class="variable-guide">
+                            <strong>Available Placeholders:</strong><br>
+                            <code>{user}</code> - Streamer Name | <code>{title}</code> - Stream Title | <code>{game}</code> - Game Name | <code>{link}</code> - Channel URL
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button class="btn btn-purple" style="background-color: var(--status-online);" onclick="manageStreamer('add')">Save / Update Streamer</button>
                         <button class="btn btn-danger" onclick="manageStreamer('remove')">Remove Streamer</button>
                     </div>
                 </section>
@@ -228,19 +210,15 @@
         // ⚠️ EDIT THIS TO MATCH YOUR NEW RAILWAY APP PUBLIC DOMAIN NETWORKING LINK
         const BACKEND_URL = "https://scoreybotv2-production.up.railway.app";
 
-        // Tab Switching Engine
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             
             document.getElementById(tabId).classList.add('active');
             element.classList.add('active');
-
-            // Dynamically change visual header title text field
             document.getElementById('page-title').innerText = element.innerText;
         }
 
-        // Fetch streamers
         async function fetchStreamers() {
             const container = document.getElementById('streamerListContainer');
             try {
@@ -254,10 +232,14 @@
                 }
                 container.innerHTML = '';
                 usernames.forEach(name => {
+                    const customMsg = streamers[name].customMessage || "Default Template Active";
                     container.innerHTML += `
                         <div class="streamer-row">
-                            <div><h4>${name}</h4><p style="font-size: 0.8rem; color: var(--text-muted);">Tracking actively monitored</p></div>
-                            <div style="font-size: 0.75rem; background-color: rgba(255,255,255,0.05); color: var(--text-muted); padding: 4px 10px; border-radius: 6px; font-weight: 700;">Registered</div>
+                            <div>
+                                <h4>${name}</h4>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); max-width: 500px; word-break: break-word;">${customMsg}</p>
+                            </div>
+                            <div style="font-size: 0.75rem; background-color: rgba(255,255,255,0.05); color: var(--text-muted); padding: 4px 10px; border-radius: 6px; font-weight: 700;">Active</div>
                         </div>`;
                 });
             } catch (err) {
@@ -265,13 +247,13 @@
             }
         }
 
-        // Post adjustments
         async function manageStreamer(actionType) {
             const twitchName = document.getElementById('twitchName').value.trim();
+            const customMessage = document.getElementById('customMessage').value.trim();
             const secretPassword = document.getElementById('secretPassword').value;
 
             if (!twitchName || !secretPassword) {
-                alert("Please type a name and provide your master administrative secret authentication token.");
+                alert("Please type a name and provide your secret authentication token inside the System Settings tab.");
                 return;
             }
 
@@ -279,12 +261,13 @@
                 const response = await fetch(`${BACKEND_URL}/api/streamers/manage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: actionType, twitchName, secretPassword })
+                    body: JSON.stringify({ action: actionType, twitchName, customMessage, secretPassword })
                 });
                 const result = await response.json();
                 if (response.ok) {
                     alert(`Success: ${result.message}`);
                     document.getElementById('twitchName').value = '';
+                    document.getElementById('customMessage').value = '';
                     fetchStreamers();
                 } else { alert(`Error: ${result.error}`); }
             } catch (err) { alert("Network error connecting to runtime platform backend."); }
