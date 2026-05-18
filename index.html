@@ -136,6 +136,7 @@
             border-radius: 14px;
             padding: 30px;
             box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+            margin-bottom: 30px; /* Space between stacked panels on the right */
         }
 
         .panel-title {
@@ -175,6 +176,60 @@
             border-radius: 6px;
             font-weight: 700;
             text-transform: uppercase;
+        }
+
+        /* Technical Info Grid Layout */
+        .tech-status-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tech-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed rgba(255,255,255,0.05);
+        }
+
+        .tech-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .tech-label {
+            color: var(--text-muted);
+        }
+
+        .tech-value {
+            font-family: monospace;
+            font-weight: bold;
+            background-color: var(--bg-card);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .tech-value.good { color: var(--status-online); }
+
+        /* Loaded Command Pill Badges */
+        .command-badge-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .command-badge {
+            font-size: 0.75rem;
+            background-color: var(--bg-card);
+            color: var(--accent-blurple);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            border: 1px solid rgba(88, 101, 242, 0.2);
+            font-family: monospace;
         }
 
         /* Logging Entry Rows */
@@ -249,14 +304,39 @@
                 </div>
             </section>
 
-            <section class="panel">
-                <h3 class="panel-title">AutoMod Event Logs</h3>
+            <div class="right-column-stack">
                 
-                <div class="log-item">
-                    <span class="log-time">System Default Template Notification</span>
-                    AutoMod engine fully prepared to intercept incidents.
-                </div>
-            </section>
+                <section class="panel">
+                    <h3 class="panel-title">Bot Performance</h3>
+                    <div class="tech-status-list">
+                        <div class="tech-item">
+                            <span class="tech-label">Gateway Latency</span>
+                            <span class="tech-value good">42ms</span>
+                        </div>
+                        <div class="tech-item">
+                            <span class="tech-label">Express Port</span>
+                            <span class="tech-value">8080</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <span class="tech-label" style="font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Operational Slash Commands</span>
+                        <div class="command-badge-container">
+                            <div class="command-badge">/warn</div>
+                            <div class="command-badge">/setgo-live</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="panel">
+                    <h3 class="panel-title">AutoMod Event Logs</h3>
+                    <div class="log-item">
+                        <span class="log-time">System Default Template Notification</span>
+                        AutoMod engine fully prepared to intercept incidents.
+                    </div>
+                </section>
+
+            </div>
 
         </div>
     </main>
