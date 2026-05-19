@@ -141,23 +141,31 @@
                 <form id="integration-form" onsubmit="handleIntegrationSubmit(event)">
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Custom Profile Name (Twitch Handle)</label>
+                            <label>Twitch Handle (Monitoring Key)</label>
                             <input type="text" id="int-name" placeholder="e.g. bwezzy_" required>
                         </div>
+                        <div class="form-group">
+                            <label>Custom Profile Display Name</label>
+                            <input type="text" id="int-display-name" placeholder="e.g. Bwezzy Core System">
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Custom Profile Avatar Image URL</label>
+                        <input type="url" id="int-avatar-url" placeholder="https://i.imgur.com/your-image.png">
+                    </div>
+                    <div class="form-row">
                         <div class="form-group">
                             <label>Target Discord Channel ID</label>
                             <input type="text" id="int-channel" placeholder="e.g. 112233445566778899">
                         </div>
-                    </div>
-                    <div class="form-row">
                         <div class="form-group">
                             <label>Ping Role ID (Optional)</label>
                             <input type="text" id="int-role" placeholder="e.g. 998877665544332211">
                         </div>
-                        <div class="form-group">
-                            <label>Embed Card Glow Color</label>
-                            <input type="text" id="int-color" placeholder="Hex format e.g. #00f3ff">
-                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Embed Card Glow Color</label>
+                        <input type="text" id="int-color" placeholder="Hex format e.g. #00f3ff">
                     </div>
                     <div class="form-group full-width">
                         <label>Custom Auto Post Message Framework</label>
@@ -244,7 +252,7 @@
                     </div>
                     <div class="form-group">
                         <label>Embed Notice Context Description</label>
-                        <textarea id="rr-embed-text" placeholder="Interact with the platform options below to select your server access node permissions..." required></textarea>
+                        <textarea id="rr-embed-text" placeholder="Interact with the platform options below..." required></textarea>
                     </div>
                     <button type="submit" class="action-btn" style="background: #ffaa00; color: black;">Inject Button Node Interaction</button>
                 </form>
@@ -319,7 +327,7 @@
                         <div class="data-item">
                             <div>
                                 <strong>@${name}</strong> 
-                                <span style="color:var(--text-muted)">→ Channel: ${prof.channelId || 'Global Default'}</span>
+                                <span style="color:var(--text-muted)">→ As: ${prof.customDisplayName || name}</span>
                             </div>
                             <button class="remove-btn" onclick="deleteIntegration('${name}')">DELETE</button>
                         </div>
@@ -336,6 +344,8 @@
             const payload = {
                 action: 'add',
                 twitchName: document.getElementById('int-name').value.trim(),
+                customDisplayName: document.getElementById('int-display-name').value.trim(),
+                customAvatarUrl: document.getElementById('int-avatar-url').value.trim(),
                 channelId: document.getElementById('int-channel').value.trim(),
                 roleId: document.getElementById('int-role').value.trim(),
                 color: document.getElementById('int-color').value.trim(),
