@@ -34,6 +34,53 @@
             overflow: hidden;
         }
 
+        /* --- AUTH SCREEN --- */
+        #auth-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: var(--bg-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .auth-container {
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid rgba(170, 0, 255, 0.2);
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
+
+        .auth-container h2 { margin-bottom: 20px; font-weight: 800; }
+        .auth-container h2 span { color: var(--accent-purple); }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase;}
+        .form-group input {
+            width: 100%; padding: 12px; background: #06050a; border: 1px solid var(--border-subtle);
+            border-radius: 8px; color: white; outline: none;
+        }
+        .form-group input:focus { border-color: var(--accent-purple); }
+
+        .auth-btn {
+            width: 100%; padding: 12px; background: var(--accent-purple); border: none;
+            border-radius: 8px; color: white; font-weight: 700; cursor: pointer; margin-top: 10px;
+        }
+        .auth-toggle {
+            text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 15px; cursor: pointer;
+        }
+
+        /* --- APPARATUS LAYOUT (HIDDEN UNTIL AUTH) --- */
+        #app-wrapper {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
         /* --- SIDEBAR NAVIGATION --- */
         aside {
             width: 260px;
@@ -46,392 +93,198 @@
             flex-shrink: 0;
         }
 
-        .brand {
-            font-size: 1.3rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            margin-bottom: 35px;
-            color: var(--text-white);
-        }
+        .brand { font-size: 1.3rem; font-weight: 800; letter-spacing: 2px; margin-bottom: 35px; }
         .brand span { color: var(--accent-purple); }
 
-        .menu-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
+        .menu-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
         .menu-item a {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 15px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: all 0.2s ease;
+            display: flex; align-items: center; gap: 15px; padding: 12px 15px;
+            color: var(--text-muted); text-decoration: none; font-weight: 600; border-radius: 8px;
         }
-
-        .menu-item.active a, .menu-item a:hover {
-            color: var(--text-white);
-            background-color: rgba(255, 255, 255, 0.03);
-        }
-        .menu-item.active a {
-            border-left: 3px solid var(--accent-purple);
-        }
+        .menu-item.active a, .menu-item a:hover { color: var(--text-white); background-color: rgba(255, 255, 255, 0.03); }
+        .menu-item.active a { border-left: 3px solid var(--accent-purple); }
 
         .vibe-meter {
             background: linear-gradient(135deg, #120a21 0%, #07040d 100%);
-            border: 1px solid rgba(170, 0, 255, 0.1);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: auto;
-            margin-bottom: 25px;
+            border: 1px solid rgba(170, 0, 255, 0.1); border-radius: 12px; padding: 20px; margin-top: auto; margin-bottom: 25px;
         }
         .vibe-title { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px;}
         .vibe-value { font-size: 2rem; font-weight: 800; color: #00ffaa; margin: 5px 0;}
         .vibe-desc { font-size: 0.8rem; color: var(--text-muted); }
 
-        .user-profile-summary {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-top: 1px solid var(--border-subtle);
-            padding-top: 20px;
-        }
-        .pfp-placeholder {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: var(--accent-purple);
-            box-shadow: 0 0 10px var(--glow-purple);
-        }
+        .user-profile-summary { display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border-subtle); padding-top: 20px; }
+        .pfp-placeholder { width: 42px; height: 42px; border-radius: 50%; background: var(--accent-purple); }
         .profile-info .username { font-weight: 700; font-size: 0.95rem; }
         .profile-info .status { font-size: 0.75rem; color: #ffaa00; }
 
-        /* --- MAIN APP WINDOW CONTAINER --- */
-        main {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
+        /* --- MAIN WINDOW ARRAY --- */
+        main { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid var(--border-subtle); }
+        .search-bar { background-color: #0e0c19; border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 20px; width: 350px; color: var(--text-white); outline: none; }
 
-        /* Top Header Search Array */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-        .search-bar {
-            background-color: #0e0c19;
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 10px 20px;
-            border-radius: 20px;
-            width: 350px;
-            color: var(--text-white);
-            outline: none;
-        }
-
-        /* Master Framework Workspace Matrix */
-        .workspace-matrix {
-            display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 30px;
-            padding: 40px;
-            max-width: 1600px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .dashboard-feed {
-            display: flex;
-            flex-direction: column;
-            gap: 35px;
-        }
-
+        .workspace-matrix { display: grid; grid-template-columns: 1fr 320px; gap: 30px; padding: 40px; max-width: 1600px; width: 100%; margin: 0 auto; }
+        .dashboard-feed { display: flex; flex-direction: column; gap: 35px; }
         .welcome-hero h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 5px; }
         .welcome-hero p { color: var(--text-muted); font-size: 1rem; }
         .welcome-hero p span { color: var(--accent-neon-pink); }
 
-        /* Module Group Row Components */
-        .section-block-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .section-block-title span {
-            width: 8px;
-            height: 8px;
-            background-color: #00ffaa;
-            border-radius: 50%;
-            display: inline-block;
-        }
+        .section-block-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .section-block-title span { width: 8px; height: 8px; background-color: #00ffaa; border-radius: 50%; display: inline-block; }
 
-        .pulse-row-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-        }
-
-        .pulse-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 20px;
-            transition: background-color 0.2s;
-        }
-        .pulse-card:hover { background-color: var(--bg-card-hover); }
-        
+        .pulse-row-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        .pulse-card { background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 20px; }
         .pulse-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 0.85rem;}
         .badge-live { background-color: var(--accent-neon-pink); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; }
         .badge-vc { background-color: #00ffaa; color: black; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; }
 
         .card-action-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: none;
-            color: white;
-            padding: 8px 0;
-            width: 100%;
-            border-radius: 6px;
-            margin-top: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
+            background: rgba(255, 255, 255, 0.05); border: none; color: white; padding: 8px 0;
+            width: 100%; border-radius: 6px; margin-top: 15px; font-weight: 600; cursor: pointer; display: inline-block; text-align: center; text-decoration: none; font-size: 0.85rem;
         }
         .card-action-btn:hover { background: var(--accent-purple); }
 
-        /* Core Showcases Row Modules */
-        .active-media-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
+        .active-media-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         .media-showcase-card {
-            height: 180px;
-            border-radius: 12px;
+            height: 180px; border-radius: 12px;
             background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(10,8,18,0.95) 100%), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop') center/cover;
-            border: 1px solid var(--border-subtle);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            border: 1px solid var(--border-subtle); padding: 20px; display: flex; flex-direction: column; justify-content: space-between;
         }
 
-        /* --- RIGHT SIDEBAR SYSTEMS PANEL --- */
-        .system-sidepanel {
-            display: flex;
-            flex-direction: column;
-            gap: 35px;
-        }
-
-        .panel-block-list {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 20px;
-        }
-        .panel-header-wrapper {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
+        .system-sidepanel { display: flex; flex-direction: column; gap: 35px; }
+        .panel-block-list { background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 20px; }
+        .panel-header-wrapper { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 700; margin-bottom: 15px; }
         .panel-header-wrapper a { color: var(--text-muted); text-decoration: none; font-size: 0.8rem; }
 
-        .member-row-node {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.02);
-        }
+        .member-row-node { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
         .member-meta-wrapper { display: flex; align-items: center; gap: 12px; }
         .mini-avatar-node { width: 32px; height: 32px; border-radius: 50%; background-color: #25213b; }
         .member-details-text div { font-size: 0.85rem; font-weight: 600; }
         .member-details-text span { font-size: 0.75rem; color: var(--text-muted); }
-
         .live-dot-indicator { width: 6px; height: 6px; background-color: #00ffaa; border-radius: 50%; }
-        .live-text-badge { font-size: 0.7rem; font-weight: 800; color: var(--accent-neon-pink); border: 1px solid var(--accent-neon-pink); padding: 1px 4px; border-radius: 3px; }
 
-        @media (max-width: 1100px) {
-            .workspace-matrix { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 1100px) { .workspace-matrix { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <aside>
-        <div>
-            <div class="brand">_UNDERSCORE<br><span>COMMUNITY</span></div>
-            <ul class="menu-list">
-                <li class="menu-item active"><a href="#">🏠 Home</a></li>
-                <li class="menu-item"><a href="#">⚡ Pulse</a></li>
-                <li class="menu-item"><a href="#">🎯 Missions</a></li>
-                <li class="menu-item"><a href="#">🔗 Chains</a></li>
-                <li class="menu-item"><a href="#">👥 Members</a></li>
-                <li class="menu-item"><a href="#">📅 Events</a></li>
-                <li class="menu-item"><a href="#">📡 Stream Hub</a></li>
-            </ul>
+    <div id="auth-screen">
+        <div class="auth-container">
+            <h2 id="auth-title">_UNDERSCORE <span>LOGIN</span></h2>
+            <div class="form-group">
+                <label>Twitch Username</label>
+                <input type="text" id="auth-username" placeholder="e.g. Bwezzy_">
+            </div>
+            <div class="form-group">
+                <label>Custom Password</label>
+                <input type="password" id="auth-password" placeholder="••••••••">
+            </div>
+            <button class="auth-btn" id="auth-submit-btn" onclick="handleAuthSubmit()">Access Hub</button>
+            <div class="auth-toggle" id="auth-toggle-mode" onclick="toggleAuthMode()">Need an account? Register here</div>
         </div>
+    </div>
 
-        <div>
-            <div class="vibe-meter">
-                <div class="vibe-title">Community Vibe</div>
-                <div class="vibe-value">92%</div>
-                <div class="vibe-desc">High vibe right now. Keep it going.</div>
+    <div id="app-wrapper">
+        <aside>
+            <div>
+                <div class="brand">_UNDERSCORE<br><span>COMMUNITY</span></div>
+                <ul class="menu-list">
+                    <li class="menu-item active"><a href="#">🏠 Home</a></li>
+                    <li class="menu-item"><a href="dashboard.html">⚙️ Admin Control</a></li>
+                </ul>
             </div>
-            <div class="user-profile-summary">
-                <div class="pfp-placeholder"></div>
-                <div class="profile-info">
-                    <div class="username">Bwezzy_</div>
-                    <div class="status">Overclocked</div>
+            <div>
+                <div class="vibe-meter">
+                    <div class="vibe-title">Community Vibe</div>
+                    <div class="vibe-value">92%</div>
                 </div>
-            </div>
-        </div>
-    </aside>
-
-    <main>
-        <header>
-            <input type="text" class="search-bar" placeholder="Search members, events, systems...">
-            <div style="font-weight: 700; cursor: pointer;">🔔 Configuration</div>
-        </header>
-
-        <div class="workspace-matrix">
-            <div class="dashboard-feed">
-                <div class="welcome-hero">
-                    <h1>Welcome back, Bwezzy_</h1>
-                    <p>The culture runs on <span>you</span>. Keep showing up.</p>
-                </div>
-
-                <div>
-                    <div class="section-block-title"><span></span> Community Pulse</div>
-                    <div class="pulse-row-grid">
-                        <div class="pulse-card">
-                            <div class="pulse-header">
-                                <div class="mini-avatar-node" style="background-color: var(--accent-neon-pink);"></div>
-                                <div><strong>@smoking_python</strong> <span style="color: var(--text-muted);">went live</span></div>
-                            </div>
-                            <span class="badge-live">LIVE</span>
-                            <div style="font-size: 0.8rem; margin-top: 10px; color: var(--text-muted);">Playing Valorant</div>
-                            <button class="card-action-btn">Watch Now</button>
-                        </div>
-                        <div class="pulse-card">
-                            <div class="pulse-header">
-                                <div class="mini-avatar-node" style="background-color: var(--accent-neon-blue);"></div>
-                                <div><strong>@itzleeTV</strong> <span style="color: var(--text-muted);">started a VC</span></div>
-                            </div>
-                            <span class="badge-vc">VC</span>
-                            <div style="font-size: 0.8rem; margin-top: 10px; color: var(--text-muted);">Chill & Connect</div>
-                            <button class="card-action-btn">Join VC</button>
-                        </div>
-                        <div class="pulse-card">
-                            <div class="pulse-header">
-                                <div class="mini-avatar-node" style="background-color: var(--accent-purple);"></div>
-                                <div><strong>@fernn</strong> <span style="color: var(--text-muted);">earned badge</span></div>
-                            </div>
-                            <div style="font-size: 0.85rem; font-weight: 700; color: #b76eff;">Connector Badge</div>
-                            <div style="font-size: 0.8rem; margin-top: 5px; color: var(--text-muted);">Built 3 new custom chains</div>
-                        </div>
+                <div class="user-profile-summary">
+                    <div class="pfp-placeholder"></div>
+                    <div class="profile-info">
+                        <div class="username" id="display-username">Guest</div>
+                        <div class="status">Connected</div>
                     </div>
                 </div>
+            </div>
+        </aside>
 
-                <div>
-                    <div class="section-block-title"><span></span> Active Now</div>
-                    <div class="active-media-grid">
-                        <div class="media-showcase-card">
-                            <span class="badge-vc" style="width: fit-content;">Voice Chat</span>
-                            <div>
-                                <h3 style="font-size: 1rem; font-weight: 700;">Chill Lounge</h3>
-                                <p style="font-size: 0.8rem; color: var(--text-muted);">12 in voice conversation framework</p>
-                            </div>
-                        </div>
-                        <div class="media-showcase-card" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(10,8,18,0.95) 100%), url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600&auto=format&fit=crop');">
-                            <span class="badge-live" style="width: fit-content;">LIVE</span>
-                            <div>
-                                <h3 style="font-size: 1rem; font-weight: 700;">Tarashark</h3>
-                                <p style="font-size: 0.8rem; color: var(--text-muted);">Apex Legends • 184 viewers</p>
+        <main>
+            <header>
+                <input type="text" class="search-bar" placeholder="Search parameters...">
+                <div style="font-weight: 700; cursor: pointer;" onclick="logout()">Logout</div>
+            </header>
+
+            <div class="workspace-matrix">
+                <div class="dashboard-feed">
+                    <div class="welcome-hero">
+                        <h1 id="welcome-banner">Welcome back!</h1>
+                        <p>The culture runs on <span>you</span>.</p>
+                    </div>
+
+                    <div>
+                        <div class="section-block-title"><span></span> Live Action Core</div>
+                        <div class="pulse-row-grid">
+                            <div class="pulse-card">
+                                <div class="pulse-header">
+                                    <div class="mini-avatar-node" style="background:#ff0077;"></div>
+                                    <div><strong>General Lounge</strong></div>
+                                </div>
+                                <span class="badge-vc">DISCORD VC</span>
+                                <a href="discord://discord.com/channels/YOUR_GUILD_ID/YOUR_VOICE_CHANNEL_ID" class="card-action-btn">Launch Discord VC</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </main>
+    </div>
 
-            <div class="system-sidepanel">
-                <div class="panel-block-list">
-                    <div class="panel-header-wrapper">
-                        <div>Active Members</div>
-                        <a href="#">View all</a>
-                    </div>
-                    <div class="member-row-node">
-                        <div class="member-meta-wrapper">
-                            <div class="mini-avatar-node"></div>
-                            <div class="member-details-text">
-                                <div>Fern</div>
-                                <span>In a VC</span>
-                            </div>
-                        </div>
-                        <div class="live-dot-indicator"></div>
-                    </div>
-                    <div class="member-row-node">
-                        <div class="member-meta-wrapper">
-                            <div class="mini-avatar-node" style="background: var(--accent-neon-pink);"></div>
-                            <div class="member-details-text">
-                                <div>Tarashark</div>
-                                <span>Streaming</span>
-                            </div>
-                        </div>
-                        <span class="live-text-badge">LIVE</span>
-                    </div>
-                    <div class="member-row-node">
-                        <div class="member-meta-wrapper">
-                            <div class="mini-avatar-node"></div>
-                            <div class="member-details-text">
-                                <div>Neonx_</div>
-                                <span>In a Game</span>
-                            </div>
-                        </div>
-                        <div class="live-dot-indicator"></div>
-                    </div>
-                </div>
+    <script>
+        // Adjust this variable to match your live production API URL precisely
+        const BACKEND_URL = "https://scoreybotv2-production.up.railway.app";
+        let isLoginMode = true;
 
-                <div class="panel-block-list">
-                    <div class="panel-header-wrapper">
-                        <div>Live Streams</div>
-                        <a href="#">View all</a>
-                    </div>
-                    <div class="member-row-node">
-                        <div class="member-meta-wrapper">
-                            <div class="mini-avatar-node" style="border-radius: 4px;"></div>
-                            <div class="member-details-text">
-                                <div>Tarashark</div>
-                                <span style="color:#ff0077;">Apex Legends</span>
-                            </div>
-                        </div>
-                        <div style="font-size: 0.8rem; font-weight: 700;">👁️ 184</div>
-                    </div>
-                    <div class="member-row-node">
-                        <div class="member-meta-wrapper">
-                            <div class="mini-avatar-node" style="border-radius: 4px; background: #3c1e70;"></div>
-                            <div class="member-details-text">
-                                <div>Neonx_</div>
-                                <span style="color:#ff0077;">Just Chatting</span>
-                            </div>
-                        </div>
-                        <div style="font-size: 0.8rem; font-weight: 700;">👁️ 97</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerHTML = isLoginMode ? "_UNDERSCORE <span>LOGIN</span>" : "_UNDERSCORE <span>REGISTER</span>";
+            document.getElementById('auth-submit-btn').innerText = isLoginMode ? "Access Hub" : "Create Account";
+            document.getElementById('auth-toggle-mode').innerText = isLoginMode ? "Need an account? Register here" : "Already registered? Login here";
+        }
 
+        async function handleAuthSubmit() {
+            const username = document.getElementById('auth-username').value.trim();
+            const password = document.getElementById('auth-password').value;
+
+            if(!username || !password) return alert("Please specify both parameters.");
+
+            const endpoint = isLoginMode ? "/api/hub/login" : "/api/hub/register";
+
+            try {
+                const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const result = await response.json();
+
+                if(response.ok && result.success) {
+                    document.getElementById('auth-screen').style.display = 'none';
+                    document.getElementById('app-wrapper').style.display = 'flex';
+                    document.getElementById('display-username').innerText = username;
+                    document.getElementById('welcome-banner').innerText = `Welcome back, ${username}`;
+                } else {
+                    alert(result.error || "Authentication procedure failed.");
+                }
+            } catch (err) {
+                alert("Cannot clear gateway loop. Is backend active?");
+            }
+        }
+
+        function logout() {
+            document.getElementById('auth-password').value = "";
+            document.getElementById('app-wrapper').style.display = 'none';
+            document.getElementById('auth-screen').style.display = 'flex';
+        }
+    </script>
 </body>
 </html>
