@@ -3,558 +3,421 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScoreyBot | Ultimate Admin Center</title>
+    <title>_UNDERSCORE | Admin Control Panel</title>
     <style>
         :root {
-            --bg-primary: #0f0f13;
-            --bg-secondary: #181820;
-            --bg-card: #21212b;
-            --accent-purple: #9146FF;
-            --accent-blurple: #5865F2;
-            --text-main: #f5f5fa;
-            --text-muted: #949ba4;
-            --status-online: #23a55a;
-            --status-error: #f23f43;
-            --status-warning: #f0b232;
+            --bg-side: #06050a;
+            --bg-main: #0a0812;
+            --bg-card: #0d0b1a;
+            --bg-card-hover: #141126;
+            --text-white: #ffffff;
+            --text-muted: #797693;
+            --accent-purple: #aa00ff;
+            --accent-neon-blue: #00f3ff;
+            --accent-neon-pink: #ff0077;
+            --border-subtle: rgba(255, 255, 255, 0.03);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-main);
+            background-color: var(--bg-main);
+            color: var(--text-white);
             display: flex;
             height: 100vh;
             overflow: hidden;
         }
 
-        .sidebar {
+        /* --- SIDEBAR NAVIGATION --- */
+        aside {
             width: 260px;
-            background-color: var(--bg-secondary);
-            border-right: 2px solid var(--bg-card);
+            background-color: var(--bg-side);
+            border-right: 1px solid var(--border-subtle);
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            justify-content: space-between;
+            padding: 25px 20px;
+            flex-shrink: 0;
         }
 
-        .sidebar-brand { font-size: 1.3rem; font-weight: 700; margin-bottom: 40px; padding-left: 10px; }
-        .sidebar-brand a { text-decoration: none; color: inherit; }
-        .sidebar-brand span { color: #ff6b00; } /* Brand Accent matching homepage logo */
+        .brand { font-size: 1.3rem; font-weight: 800; letter-spacing: 2px; margin-bottom: 35px; }
+        .brand span { color: var(--accent-purple); }
 
-        .nav-menu { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
-
-        .nav-item {
-            padding: 12px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;
-            color: var(--text-muted); transition: all 0.2s ease;
+        .menu-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .menu-item a {
+            display: flex; align-items: center; gap: 15px; padding: 12px 15px;
+            color: var(--text-muted); text-decoration: none; font-weight: 600; border-radius: 8px;
+            cursor: pointer; transition: background 0.2s, color 0.2s;
         }
-        .nav-item:hover { background-color: rgba(255, 255, 255, 0.03); color: var(--text-main); }
-        .nav-item.active { background-color: var(--accent-blurple); color: white; }
+        .menu-item.active a, .menu-item a:hover { color: var(--text-white); background-color: rgba(255, 255, 255, 0.03); }
+        .menu-item.active a { border-left: 3px solid var(--accent-purple); background-color: rgba(255, 255, 255, 0.02); }
 
-        .workspace { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
-
-        header {
-            background-color: var(--bg-secondary); padding: 20px 40px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid var(--bg-card);
-        }
-
-        .status-badge {
-            display: flex; align-items: center; background-color: var(--bg-card);
-            padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
-        }
-        .status-dot {
-            width: 8px; height: 8px; background-color: var(--status-online);
-            border-radius: 50%; margin-right: 8px; box-shadow: 0 0 8px var(--status-online);
-        }
-
-        .content-body { padding: 40px; max-width: 1000px; width: 100%; margin: 0 auto; }
-
-        .tab-panel { display: none; }
-        .tab-panel.active { display: block; }
-
-        .panel { background-color: var(--bg-secondary); border-radius: 14px; padding: 30px; margin-bottom: 30px; box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
-        .panel-title { font-size: 1.2rem; margin-bottom: 20px; font-weight: 600; border-bottom: 1px solid var(--bg-card); padding-bottom: 12px; }
-
-        .metrics-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px;
-        }
-        .metric-card {
-            background-color: var(--bg-secondary); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-blurple); box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
-        .metric-card h5 { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
-        .metric-card p { font-size: 1.4rem; font-weight: 700; color: white; margin-top: 5px; }
-
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted); }
-        .form-input {
-            width: 100%; padding: 12px; background-color: var(--bg-card); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 6px; color: white; font-size: 0.9rem; outline: none;
-        }
+        /* --- MAIN WORKSPACE --- */
+        main { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 40px; }
         
-        .variable-guide {
-            background-color: var(--bg-card); padding: 12px; border-radius: 6px; 
-            margin-top: 5px; font-size: 0.8rem; border-left: 3px solid var(--accent-purple);
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; }
+        .welcome-hero h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 5px; }
+        .welcome-hero p { color: var(--text-muted); font-size: 1rem; }
+
+        .secret-gate {
+            background: var(--bg-card); padding: 15px 20px; border-radius: 8px;
+            border: 1px solid rgba(170, 0, 255, 0.2); display: flex; gap: 15px; align-items: center; margin-bottom: 30px;
         }
-        .variable-guide code { background: rgba(0,0,0,0.3); padding: 2px 5px; border-radius: 4px; color: #ff79c6; }
-
-        .btn { padding: 12px 24px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; color: white; transition: background 0.2s; }
-        .btn-purple { background-color: var(--accent-purple); }
-        .btn-purple:hover { background-color: #772ce8; }
-        .btn-blurple { background-color: var(--accent-blurple); }
-        .btn-blurple:hover { background-color: #4752c4; }
-        .btn-danger { background-color: var(--status-error); }
-
-        .streamer-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 14px 16px; background-color: var(--bg-card); border-radius: 8px; margin-bottom: 12px;
+        .secret-gate input {
+            background: #06050a; border: 1px solid var(--border-subtle); padding: 10px;
+            border-radius: 6px; color: white; outline: none; width: 250px;
         }
 
-        .log-item {
-            padding: 12px; background-color: var(--bg-card); border-radius: 6px; margin-bottom: 8px;
-            font-family: monospace; font-size: 0.85rem; border-left: 4px solid var(--status-warning);
-        }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 30px; }
+        .panel-card { background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 25px; }
+        .panel-card h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; color: var(--text-white); display: flex; align-items: center; gap: 10px; }
+        .panel-card h2 span { width: 8px; height: 8px; background-color: var(--accent-purple); border-radius: 50%; display: inline-block; }
 
-        .badge-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .badge { background-color: var(--bg-card); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; }
-        .badge span { cursor: pointer; color: var(--status-error); font-weight: bold; }
+        /* --- FORM STRUCTURES --- */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; }
+        .form-group.full-width { grid-column: span 2; }
+        .form-group label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px; background: #06050a; border: 1px solid var(--border-subtle);
+            border-radius: 8px; color: white; outline: none; font-size: 0.9rem;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent-purple); }
+        .form-group textarea { resize: vertical; height: 80px; }
+
+        .action-btn {
+            background: var(--accent-purple); border: none; color: white; padding: 12px 20px;
+            border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s; width: 100%;
+        }
+        .action-btn:hover { background: #bd1aff; }
+        .action-btn.secondary { background: rgba(255, 255, 255, 0.05); }
+        .action-btn.secondary:hover { background: rgba(255, 255, 255, 0.1); }
+
+        /* --- DATA TABLES / LISTS --- */
+        .data-list { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow-y: auto; }
+        .data-item {
+            background: rgba(0,0,0,0.2); border: 1px solid var(--border-subtle); padding: 12px;
+            border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;
+        }
+        .data-item .remove-btn { color: var(--accent-neon-pink); cursor: pointer; font-weight: 700; background: none; border: none; }
     </style>
 </head>
 <body>
 
-    <nav class="sidebar">
-        <div class="sidebar-links">
-    <a href="hub.html">🌐 View Public Community Hub</a>
-    </div>
-        <div class="nav-menu">
-            <div class="nav-item active" onclick="switchTab('tab-streamers', this)">Stream Alerts</div>
-            <div class="nav-item" onclick="switchTab('tab-commands', this)">Edit Commands</div>
-            <div class="nav-item" onclick="switchTab('tab-modules', this)">AutoMod Modules</div>
-            <div class="nav-item" onclick="switchTab('tab-community', this)">Community Tools</div>
-            <div class="nav-item" onclick="switchTab('tab-system', this)">System Settings</div>
+    <aside>
+        <div>
+            <div class="brand">_UNDERSCORE<br><span>CONTROL</span></div>
+            <ul class="menu-list">
+                <li class="menu-item"><a href="hub.html">🏠 Return to Hub</a></li>
+                <li class="menu-item active"><a>⚙️ Admin Control</a></li>
+            </ul>
         </div>
-    </nav>
+    </aside>
 
-    <div class="workspace">
+    <main>
         <header>
-            <h2 id="page-title">Twitch Notification Network</h2>
-            <div class="status-badge"><div class="status-dot"></div>DASHBOARD ONLINE</div>
+            <div class="welcome-hero">
+                <h1>System Configurations</h1>
+                <p>Modify internal bot layers, streaming endpoints, and alert behaviors.</p>
+            </div>
         </header>
 
-        <div class="content-body">
+        <div class="secret-gate">
+            <label style="font-size: 0.85rem; font-weight:700; text-transform:uppercase; color:var(--text-muted)">Master Security Key:</label>
+            <input type="password" id="master-secret" placeholder="Enter WEB_SECRET from .env">
+            <span style="font-size:0.8rem; color:var(--accent-neon-blue)">Required to apply any infrastructure updates.</span>
+        </div>
 
-            <div id="tab-streamers" class="tab-panel active">
-                <div class="metrics-grid">
-                    <div class="metric-card" style="border-left-color: var(--accent-purple);">
-                        <h5>Tracked Streams</h5>
-                        <p id="metric-streamers-count">0</p>
+        <div class="dashboard-grid">
+
+            <div class="panel-card">
+                <h2><span style="background-color: var(--accent-neon-blue);"></span> Auto Post & Alerts Integration</h2>
+                <form id="integration-form" onsubmit="handleIntegrationSubmit(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Custom Profile Name (Twitch Handle)</label>
+                            <input type="text" id="int-name" placeholder="e.g. bwezzy_" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Target Discord Channel ID</label>
+                            <input type="text" id="int-channel" placeholder="e.g. 112233445566778899">
+                        </div>
                     </div>
-                    <div class="metric-card" style="border-left-color: var(--accent-blurple);">
-                        <h5>Custom Cmds</h5>
-                        <p id="metric-commands-count">0</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ping Role ID (Optional)</label>
+                            <input type="text" id="int-role" placeholder="e.g. 998877665544332211">
+                        </div>
+                        <div class="form-group">
+                            <label>Embed Card Glow Color</label>
+                            <input type="text" id="int-color" placeholder="Hex format e.g. #00f3ff">
+                        </div>
                     </div>
-                    <div class="metric-card" style="border-left-color: var(--status-warning);">
-                        <h5>Total Violations</h5>
-                        <p id="metric-violations-count">0</p>
+                    <div class="form-group full-width">
+                        <label>Custom Auto Post Message Framework</label>
+                        <textarea id="int-message" placeholder="Variables: {user} = Name, {title} = Stream Title, {game} = Category, {link} = Stream URL"></textarea>
                     </div>
-                    <div class="metric-card" style="border-left-color: var(--status-online);">
-                        <h5>Alert Shards</h5>
-                        <p>Active</p>
+                    <button type="submit" class="action-btn" style="background: var(--accent-neon-blue); color: black;">Save Notification Profile</button>
+                </form>
+
+                <div class="data-list" id="integration-list">
+                    </div>
+            </div>
+
+            <div class="panel-card">
+                <h2><span style="background-color: var(--accent-purple);"></span> Automation Chains</h2>
+                <form id="command-form" onsubmit="handleCommandSubmit(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Deployment Architecture</label>
+                            <select id="cmd-type">
+                                <option value="prefix">Prefix Command (!trigger)</option>
+                                <option value="slash">Slash Command (/trigger)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Trigger Keyphrase</label>
+                            <input type="text" id="cmd-trigger" placeholder="e.g. social" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Prefix Identifier</label>
+                            <input type="text" id="cmd-prefix" value="!" placeholder="e.g. !">
+                        </div>
+                        <div class="form-group">
+                            <span style="font-size:0.75rem; color:var(--text-muted); margin-top:20px;">Slash commands automatically register directly onto Discord APIs.</span>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Automated Response String</label>
+                        <textarea id="cmd-response" placeholder="Type what the bot should output..." required></textarea>
+                    </div>
+                    <button type="submit" class="action-btn">Deploy Chain Node</button>
+                </form>
+
+                <div class="data-list" id="command-list">
+                    </div>
+            </div>
+
+            <div class="panel-card">
+                <h2><span style="background-color: var(--accent-neon-pink);"></span> AutoMod Phrase Filter</h2>
+                <div class="form-group">
+                    <label>Restrict New Term Phrase</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="automod-word" placeholder="e.g. untrustedlink.com" style="flex-grow: 1;">
+                        <button class="action-btn" style="width: auto; background: var(--accent-neon-pink);" onclick="addBannedWord()">Block Word</button>
                     </div>
                 </div>
 
-                <section class="panel">
-                    <h3 class="panel-title">Configure Global Default Alert Channel</h3>
-                    <div class="form-group">
-                        <label>Discord Channel ID</label>
-                        <input type="text" id="globalChannelId" class="form-input" placeholder="e.g. 112233445566778899">
+                <label class="form-group label" style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Active Filter Restrictions</label>
+                <div class="data-list" id="banned-words-list">
                     </div>
-                    <button class="btn btn-blurple" onclick="saveGlobalChannel()">Update Default Channel</button>
-                </section>
-
-                <section class="panel">
-                    <h3 class="panel-title">Add / Edit Stream Alerts</h3>
-                    <div class="form-group">
-                        <label>Twitch Username</label>
-                        <input type="text" id="twitchName" class="form-input" placeholder="e.g. shroud">
-                    </div>
-                    <div class="form-group">
-                        <label>Custom Notification Channel ID (Optional)</label>
-                        <input type="text" id="streamerChannelId" class="form-input" placeholder="Leave blank to use global default channel">
-                    </div>
-                    <div class="form-group">
-                        <label>Role ID to Mention (Optional - Do not use symbols)</label>
-                        <input type="text" id="streamerRoleId" class="form-input" placeholder="e.g. 987654321012345678">
-                    </div>
-                    <div class="form-group">
-                        <label>Embed Side Border Accent Color (Hex Format)</label>
-                        <input type="text" id="streamerColor" class="form-input" placeholder="#6441a5">
-                    </div>
-                    <div class="form-group">
-                        <label>Notification Template (Optional)</label>
-                        <input type="text" id="customMessage" class="form-input" placeholder="🔔 {user} is live streaming {game}! Go watch: {link}">
-                    </div>
-                    <div style="display: flex; gap: 10px; margin-top: 20px;">
-                        <button class="btn btn-purple" style="background-color: var(--status-online);" onclick="manageStreamer('add')">Save / Update Streamer</button>
-                        <button class="btn btn-danger" onclick="manageStreamer('remove')">Remove Streamer</button>
-                    </div>
-                </section>
-
-                <section class="panel">
-                    <h3 class="panel-title">Tracked Streamer Registry</h3>
-                    <div id="streamerListContainer"></div>
-                </section>
-            </div>
-
-            <div id="tab-commands" class="tab-panel">
-                <section class="panel">
-                    <h3 class="panel-title">Deploy New Custom Command</h3>
-                    <div class="form-group">
-                        <label>Command Type</label>
-                        <select id="commandType" class="form-input" onchange="toggleCommandStyleUI()">
-                            <option value="prefix">Standard Text Prefix Command (! or ?)</option>
-                            <option value="slash">Official Discord Slash Command (/)</option>
-                        </select>
-                    </div>
-                    <div class="form-group" id="prefixSelectionContainer">
-                        <label>Choose Prefix Trigger</label>
-                        <select id="commandPrefix" class="form-input" style="width: 120px;">
-                            <option value="!">!</option>
-                            <option value="?">?</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label id="triggerInputLabel">Trigger Keyword</label>
-                        <input type="text" id="commandTrigger" class="form-input" placeholder="e.g. website">
-                    </div>
-                    <div class="form-group">
-                        <label>Bot Action Response Output</label>
-                        <input type="text" id="commandResponse" class="form-input" placeholder="Check out our site at scoreybot.app!">
-                    </div>
-                    <button class="btn btn-purple" onclick="saveCustomCommand()">Deploy Command Structure</button>
-                </section>
-
-                <section class="panel">
-                    <h3 class="panel-title">Active Dynamic Command Matrix</h3>
-                    <div id="commandListContainer"></div>
-                </section>
-            </div>
-
-            <div id="tab-modules" class="tab-panel">
-                <section class="panel">
-                    <h3 class="panel-title">Blacklisted Phrases Filter</h3>
-                    <div class="form-group">
-                        <label>Add New Term / Sentence To Blocklist</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="newBannedWord" class="form-input" placeholder="Type word/phrase here">
-                            <button class="btn btn-purple" onclick="addBannedWord()">Block Phrase</button>
-                        </div>
-                    </div>
-                    <div class="badge-list" id="bannedWordsContainer"></div>
-                </section>
-
-                <section class="panel">
-                    <h3 class="panel-title">Live Moderation Audit Stream</h3>
-                    <div id="moderationLogsContainer" style="max-height: 300px; overflow-y: auto;">
-                        <p style="color: var(--text-muted);">Awaiting network synchronization updates...</p>
-                    </div>
-                </section>
-            </div>
-
-            <div id="tab-community" class="tab-panel">
-                <section class="panel">
-                    <h3 class="panel-title">Welcome & Leave Gateway Settings</h3>
-                    <div class="form-group">
-                        <label>Welcome System Target Channel ID</label>
-                        <input type="text" id="welcomeChannelId" class="form-input" placeholder="e.g. 112233445566778899">
-                    </div>
-                    <div class="form-group">
-                        <label>Welcome Member Message Notification</label>
-                        <input type="text" id="welcomeMessage" class="form-input" placeholder="Welcome {user} to the server! You are member #{count}!">
-                    </div>
-                    <div class="form-group">
-                        <label>Leave Member Message Notification</label>
-                        <input type="text" id="leaveMessage" class="form-input" placeholder="{user} just departed the server.">
-                    </div>
-                    <button class="btn btn-purple" onclick="saveWelcomeSettings()">Save Gateway Configurations</button>
-                </section>
-
-                <section class="panel">
-                    <h3 class="panel-title">Reaction Role Button Setup</h3>
-                    <div class="form-group">
-                        <label>Destination Channel ID</label>
-                        <input type="text" id="rrChannelId" class="form-input" placeholder="e.g. 112233445566778899">
-                    </div>
-                    <div class="form-group">
-                        <label>Embed Description Instructions Content Text</label>
-                        <input type="text" id="rrEmbedText" class="form-input" placeholder="Click the button below to claim the Announcements role!">
-                    </div>
-                    <div class="form-group">
-                        <label>Role ID To Grant On Click</label>
-                        <input type="text" id="rrRoleId" class="form-input" placeholder="e.g. 987654321012345678">
-                    </div>
-                    <div class="form-group">
-                        <label>Interactive Button Display Label Text</label>
-                        <input type="text" id="rrButtonText" class="form-input" placeholder="Claim Role">
-                    </div>
-                    <button class="btn btn-blurple" onclick="deployReactionRole()">Deploy Active Reaction Embed</button>
-                </section>
-            </div>
-
-            <div id="tab-system" class="tab-panel">
-                <section class="panel">
-                    <h3 class="panel-title">Bot Status Presentation Presence</h3>
-                    <div class="form-group">
-                        <label>Activity Display Text</label>
-                        <input type="text" id="botPresenceText" class="form-input" placeholder="e.g. over the server">
-                    </div>
-                    <div class="form-group">
-                        <label>Activity Action Type</label>
-                        <select id="botPresenceType" class="form-input">
-                            <option value="Watching">Watching</option>
-                            <option value="Playing">Playing</option>
-                            <option value="Listening">Listening</option>
-                            <option value="Competing">Competing</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-blurple" onclick="updatePresence()">Update Status Activity</button>
-                </section>
-
-                <section class="panel">
-                    <h3 class="panel-title">Authentication Matrix</h3>
-                    <div class="form-group">
-                        <label>Secret Admin Dashboard Key (WEB_SECRET)</label>
-                        <input type="password" id="masterSecretPassword" class="form-input" placeholder="Enter WEB_SECRET key string">
-                    </div>
-                </section>
             </div>
 
         </div>
-    </div>
+    </main>
 
     <script>
-        // ⚠️ EDIT THIS TO MATCH YOUR RAILWAY PUBLIC ENVIRONMENT NETWORKING LINK
         const BACKEND_URL = "https://scoreybotv2-production.up.railway.app";
 
-        function switchTab(tabId, element) {
-            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            
-            document.getElementById(tabId).classList.add('active');
-            element.classList.add('active');
-            document.getElementById('page-title').innerText = element.innerText;
+        // Initial Data Fetch on Admin Load
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchExistingIntegrations();
+            fetchExistingCommands();
+            fetchBannedWords();
+        });
 
-            if (tabId === 'tab-commands') fetchCustomCommands();
-            if (tabId === 'tab-streamers') fetchStreamers();
-            if (tabId === 'tab-modules') { fetchBannedWords(); fetchModerationLogs(); }
-            if (tabId === 'tab-community') fetchCommunitySettings();
+        function getSecret() {
+            return document.getElementById('master-secret').value;
         }
 
-        function toggleCommandStyleUI() {
-            const type = document.getElementById('commandType').value;
-            const prefixContainer = document.getElementById('prefixSelectionContainer');
-            const label = document.getElementById('triggerInputLabel');
-            if (type === 'slash') {
-                prefixContainer.style.display = 'none';
-                label.innerText = "Slash Trigger (/name)";
-            } else {
-                prefixContainer.style.display = 'block';
-                label.innerText = "Trigger Keyword";
-            }
-        }
-
-        async function fetchStreamers() {
-            const container = document.getElementById('streamerListContainer');
+        // --- 1. AUTO POST INTEGRATION ENGINE HANDLERS ---
+        async function fetchExistingIntegrations() {
             try {
-                const response = await fetch(`${BACKEND_URL}/api/streamers`);
-                const data = await response.json();
-                
-                document.getElementById('globalChannelId').value = data.globalChannelId || '';
-                
-                const streamers = data.streamers || {};
-                const usernames = Object.keys(streamers);
-                document.getElementById('metric-streamers-count').innerText = usernames.length;
-
-                if (usernames.length === 0) {
-                    container.innerHTML = `<p style="color: var(--text-muted);">No streamers registered.</p>`;
-                    return;
-                }
+                const res = await fetch(`${BACKEND_URL}/api/streamers`);
+                const data = await res.json();
+                const container = document.getElementById('integration-list');
                 container.innerHTML = '';
-                usernames.forEach(name => {
-                    const info = streamers[name];
+
+                Object.keys(data.streamers || {}).forEach(name => {
+                    const prof = data.streamers[name];
                     container.innerHTML += `
-                        <div class="streamer-row">
+                        <div class="data-item">
                             <div>
-                                <h4>${name} <span style="font-size:0.75rem; color:var(--accent-blurple); margin-left:8px;">Color: ${info.color || '#6441a5'}</span></h4>
-                                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top:4px;">Ch: ${info.channelId || 'Default'} | Mention: ${info.roleId || 'None'}</p>
+                                <strong>@${name}</strong> 
+                                <span style="color:var(--text-muted)">→ Channel: ${prof.channelId || 'Global Default'}</span>
                             </div>
-                        </div>`;
+                            <button class="remove-btn" onclick="deleteIntegration('${name}')">DELETE</button>
+                        </div>
+                    `;
                 });
-            } catch (err) { container.innerHTML = `<p style="color: var(--status-error);">Error connecting to host backend.</p>`; }
+            } catch(e) { console.error("Error fetching integration metrics profiles:", e); }
         }
 
-        async function saveGlobalChannel() {
-            const globalChannelId = document.getElementById('globalChannelId').value.trim();
-            const secretPassword = document.getElementById('masterSecretPassword').value;
-            const response = await fetch(`${BACKEND_URL}/api/streamers/global-channel`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ globalChannelId, secretPassword })
-            });
-            if (response.ok) { alert("Global default alert routing updated!"); fetchStreamers(); } else { alert("Failed authorization update link."); }
+        async function handleIntegrationSubmit(e) {
+            e.preventDefault();
+            const secretPassword = getSecret();
+            if(!secretPassword) return alert("Please supply your Master Security Key validation pass phrase.");
+
+            const payload = {
+                action: 'add',
+                twitchName: document.getElementById('int-name').value.trim(),
+                channelId: document.getElementById('int-channel').value.trim(),
+                roleId: document.getElementById('int-role').value.trim(),
+                color: document.getElementById('int-color').value.trim(),
+                customMessage: document.getElementById('int-message').value.trim(),
+                secretPassword
+            };
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/streamers/manage`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                if(res.ok && result.success) {
+                    alert("Auto Post custom profile integration framework committed!");
+                    document.getElementById('integration-form').reset();
+                    fetchExistingIntegrations();
+                } else { alert(result.error || "Execution gateway refused pipeline write parameters."); }
+            } catch(err) { alert("Network gateway loop fault."); }
         }
 
-        async function manageStreamer(actionType) {
-            const twitchName = document.getElementById('twitchName').value.trim();
-            const channelId = document.getElementById('streamerChannelId').value.trim();
-            const roleId = document.getElementById('streamerRoleId').value.trim();
-            const color = document.getElementById('streamerColor').value.trim();
-            const customMessage = document.getElementById('customMessage').value.trim();
-            const secretPassword = document.getElementById('masterSecretPassword').value;
+        async function deleteIntegration(name) {
+            const secretPassword = getSecret();
+            if(!secretPassword) return alert("Security key validation signature mandatory.");
 
-            const response = await fetch(`${BACKEND_URL}/api/streamers/manage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: actionType, twitchName, channelId, roleId, color, customMessage, secretPassword })
-            });
-            if (response.ok) { alert("Streamer settings aligned."); fetchStreamers(); } else { alert("Operation error."); }
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/streamers/manage`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: 'delete', twitchName: name, secretPassword })
+                });
+                if(res.ok) { fetchExistingIntegrations(); }
+            } catch(e) {}
         }
 
-        async function fetchCustomCommands() {
-            const container = document.getElementById('commandListContainer');
-            const response = await fetch(`${BACKEND_URL}/api/commands`);
-            const data = await response.json();
-            const commandKeys = Object.keys(data);
-            document.getElementById('metric-commands-count').innerText = commandKeys.length;
-            container.innerHTML = '';
-            commandKeys.forEach(key => {
-                const cmd = data[key];
-                container.innerHTML += `
-                    <div class="streamer-row">
-                        <div><h4 style="font-family: monospace;">${cmd.type === 'slash' ? '/' : cmd.prefix}${cmd.trigger}</h4><p style="color:var(--text-muted); font-size:0.85rem;">${cmd.response}</p></div>
-                        <button class="btn btn-danger" style="padding:6px 12px; font-size:0.75rem;" onclick="deleteCustomCommand('${key}')">Delete</button>
-                    </div>`;
-            });
+
+        // --- 2. AUTOMATION CHAINS ENGINE HANDLERS ---
+        async function fetchExistingCommands() {
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/commands`);
+                const data = await res.json();
+                const container = document.getElementById('command-list');
+                container.innerHTML = '';
+
+                Object.keys(data).forEach(id => {
+                    const cmd = data[id];
+                    container.innerHTML += `
+                        <div class="data-item">
+                            <div><strong>${cmd.type === 'prefix' ? cmd.prefix+cmd.trigger : '/'+cmd.trigger}</strong></div>
+                            <button class="remove-btn" onclick="deleteCommand('${id}')">DELETE</button>
+                        </div>
+                    `;
+                });
+            } catch(e) {}
         }
 
-        async function saveCustomCommand() {
-            const type = document.getElementById('commandType').value;
-            const prefix = document.getElementById('commandPrefix').value;
-            const trigger = document.getElementById('commandTrigger').value.trim().toLowerCase();
-            const responseText = document.getElementById('commandResponse').value.trim();
-            const secretPassword = document.getElementById('masterSecretPassword').value;
+        async function handleCommandSubmit(e) {
+            e.preventDefault();
+            const secretPassword = getSecret();
+            if(!secretPassword) return alert("Security token context empty.");
 
-            await fetch(`${BACKEND_URL}/api/commands/save`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type, prefix, trigger, response: responseText, secretPassword })
-            });
-            fetchCustomCommands();
+            const payload = {
+                type: document.getElementById('cmd-type').value,
+                prefix: document.getElementById('cmd-prefix').value,
+                trigger: document.getElementById('cmd-trigger').value.trim(),
+                response: document.getElementById('cmd-response').value.trim(),
+                secretPassword
+            };
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/commands/save`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                if(res.ok) {
+                    document.getElementById('command-form').reset();
+                    document.getElementById('cmd-prefix').value = "!";
+                    fetchExistingCommands();
+                }
+            } catch(err) {}
         }
 
-        async function deleteCustomCommand(id) {
-            const secretPassword = document.getElementById('masterSecretPassword').value;
-            await fetch(`${BACKEND_URL}/api/commands/delete`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, secretPassword })
-            });
-            fetchCustomCommands();
+        async function deleteCommand(id) {
+            const secretPassword = getSecret();
+            if(!secretPassword) return alert("Security profile mismatch token needed.");
+
+            try {
+                await fetch(`${BACKEND_URL}/api/commands/delete`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ id, secretPassword })
+                });
+                fetchExistingCommands();
+            } catch(e) {}
         }
 
+
+        // --- 3. AUTOMOD MATRIX ENGINE HANDLERS ---
         async function fetchBannedWords() {
-            const container = document.getElementById('bannedWordsContainer');
-            const res = await fetch(`${BACKEND_URL}/api/automod/words`);
-            const words = await res.json();
-            container.innerHTML = '';
-            words.forEach(word => {
-                container.innerHTML += `<div class="badge">${word} <span onclick="removeBannedWord('${word}')">×</span></div>`;
-            });
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/automod/words`);
+                const data = await res.json();
+                const container = document.getElementById('banned-words-list');
+                container.innerHTML = '';
+
+                data.forEach(word => {
+                    container.innerHTML += `
+                        <div class="data-item">
+                            <div>${word}</div>
+                            <button class="remove-btn" onclick="removeBannedWord('${word}')">ALLOW</button>
+                        </div>
+                    `;
+                });
+            } catch(e) {}
         }
 
         async function addBannedWord() {
-            const word = document.getElementById('newBannedWord').value.trim();
-            const secretPassword = document.getElementById('masterSecretPassword').value;
-            await fetch(`${BACKEND_URL}/api/automod/words/add`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ word, secretPassword })
-            });
-            document.getElementById('newBannedWord').value = '';
-            fetchBannedWords();
+            const secretPassword = getSecret();
+            const word = document.getElementById('automod-word').value.trim();
+            if(!secretPassword || !word) return alert("Parameters or verification elements missing.");
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/automod/words/add`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ word, secretPassword })
+                });
+                if(res.ok) {
+                    document.getElementById('automod-word').value = '';
+                    fetchBannedWords();
+                }
+            } catch(e) {}
         }
 
         async function removeBannedWord(word) {
-            const secretPassword = document.getElementById('masterSecretPassword').value;
-            await fetch(`${BACKEND_URL}/api/automod/words/remove`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ word, secretPassword })
-            });
-            fetchBannedWords();
+            const secretPassword = getSecret();
+            if(!secretPassword) return alert("Validation parameter check failed.");
+
+            try {
+                await fetch(`${BACKEND_URL}/api/automod/words/remove`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ word, secretPassword })
+                });
+                fetchBannedWords();
+            } catch(e) {}
         }
-
-        async function fetchModerationLogs() {
-            const container = document.getElementById('moderationLogsContainer');
-            const res = await fetch(`${BACKEND_URL}/api/automod/logs`);
-            const data = await res.json();
-            document.getElementById('metric-violations-count').innerText = data.totalViolations || 0;
-            container.innerHTML = '';
-            if(!data.logs || data.logs.length === 0) { container.innerHTML = '<p style="color:var(--text-muted);">No recorded violations logs found.</p>'; return; }
-            data.logs.slice().reverse().forEach(log => {
-                container.innerHTML += `<div class="log-item">[${log.timestamp}] User ID: ${log.userId} triggered action in Guild: ${log.guildId}</div>`;
-            });
-        }
-
-        async function fetchCommunitySettings() {
-            const res = await fetch(`${BACKEND_URL}/api/community/config`);
-            const data = await res.json();
-            document.getElementById('welcomeChannelId').value = data.welcomeChannelId || '';
-            document.getElementById('welcomeMessage').value = data.welcomeMessage || '';
-            document.getElementById('leaveMessage').value = data.leaveMessage || '';
-        }
-
-        async function saveWelcomeSettings() {
-            const welcomeChannelId = document.getElementById('welcomeChannelId').value.trim();
-            const welcomeMessage = document.getElementById('welcomeMessage').value.trim();
-            const leaveMessage = document.getElementById('leaveMessage').value.trim();
-            const secretPassword = document.getElementById('masterSecretPassword').value;
-
-            await fetch(`${BACKEND_URL}/api/community/config`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ welcomeChannelId, welcomeMessage, leaveMessage, secretPassword })
-            });
-            alert("Community configurations deployed.");
-        }
-
-        async function deployReactionRole() {
-            const channelId = document.getElementById('rrChannelId').value.trim();
-            const embedText = document.getElementById('rrEmbedText').value.trim();
-            const roleId = document.getElementById('rrRoleId').value.trim();
-            const buttonText = document.getElementById('rrButtonText').value.trim();
-            const secretPassword = document.getElementById('masterSecretPassword').value;
-
-            const res = await fetch(`${BACKEND_URL}/api/community/deploy-reaction-role`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ channelId, embedText, roleId, buttonText, secretPassword })
-            });
-            if(res.ok) alert("Reaction structure successfully built inside Guild channels.");
-        }
-
-        async function updatePresence() {
-            const text = document.getElementById('botPresenceText').value.trim();
-            const type = document.getElementById('botPresenceType').value;
-            const secretPassword = document.getElementById('masterSecretPassword').value;
-            await fetch(`${BACKEND_URL}/api/system/presence`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text, type, secretPassword })
-            });
-            alert("Bot Presence Synced!");
-        }
-
-        fetchStreamers();
     </script>
 </body>
 </html>
