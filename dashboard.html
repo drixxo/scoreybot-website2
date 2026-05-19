@@ -207,6 +207,72 @@
             </div>
 
             <div class="panel-card">
+                <h2><span style="background-color: #00ffaa;"></span> Gateway Welcome Systems</h2>
+                <form id="community-config-form" onsubmit="handleCommunitySubmit(event)">
+                    <div class="form-group">
+                        <label>Target Channel ID</label>
+                        <input type="text" id="comm-channel" placeholder="e.g. 112233445566778899">
+                    </div>
+                    <div class="form-group">
+                        <label>Arrival Message (Welcome)</label>
+                        <textarea id="comm-welcome" placeholder="Variables: {user} = User mention, {count} = Server total size"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Departure Message (Leave)</label>
+                        <textarea id="comm-leave" placeholder="Variables: {user} = User plain-text name"></textarea>
+                    </div>
+                    <button type="submit" class="action-btn" style="background: #00ffaa; color: black;">Save Gateway Directives</button>
+                </form>
+            </div>
+
+            <div class="panel-card">
+                <h2><span style="background-color: #ffaa00;"></span> Reaction Role Deployer</h2>
+                <form id="reaction-role-form" onsubmit="handleReactionRoleSubmit(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Target Channel ID</label>
+                            <input type="text" id="rr-channel" placeholder="e.g. 112233445566778899" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Target Role ID to Assign</label>
+                            <input type="text" id="rr-role" placeholder="e.g. 5566778899001122" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Button Label Display Text</label>
+                        <input type="text" id="rr-btn-text" placeholder="e.g. Verify Profile" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Embed Notice Context Description</label>
+                        <textarea id="rr-embed-text" placeholder="Interact with the platform options below to select your server access node permissions..." required></textarea>
+                    </div>
+                    <button type="submit" class="action-btn" style="background: #ffaa00; color: black;">Inject Button Node Interaction</button>
+                </form>
+            </div>
+
+            <div class="panel-card">
+                <h2><span style="background-color: #ff00ff;"></span> Bot Presence Profile</h2>
+                <form id="presence-form" onsubmit="handlePresenceSubmit(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Activity Class</label>
+                            <select id="pres-type">
+                                <option value="Watching">Watching</option>
+                                <option value="Playing">Playing</option>
+                                <option value="Listening">Listening</option>
+                                <option value="Competing">Competing</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Status Text Field</label>
+                            <input type="text" id="pres-text" placeholder="e.g. over the matrix" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="action-btn" style="background: #ff00ff;">Update Presence Identity</button>
+                </form>
+            </div>
+
+            <div class="panel-card">
                 <h2><span style="background-color: var(--accent-neon-pink);"></span> AutoMod Phrase Filter</h2>
                 <div class="form-group">
                     <label>Restrict New Term Phrase</label>
@@ -232,6 +298,7 @@
             fetchExistingIntegrations();
             fetchExistingCommands();
             fetchBannedWords();
+            fetchCommunityConfigs();
         });
 
         function getSecret() {
@@ -368,7 +435,92 @@
         }
 
 
-        // --- 3. AUTOMOD MATRIX ENGINE HANDLERS ---
+        // --- 3. GATEWAY COMMUNICATIONS CONFIG HANDLING ---
+        async function fetchCommunityConfigs() {
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/community/config`);
+                const data = await res.json();
+                if(data.welcomeChannelId) document.getElementById('comm-channel').value = data.welcomeChannelId;
+                if(data.welcomeMessage) document.getElementById('comm-welcome').value = data.welcomeMessage;
+                if(data.leaveMessage) document.getElementById('comm-leave').value = data.leaveMessage;
+            } catch(e) {}
+        }
+
+        async function handleCommunitySubmit(e) {
+            e.preventDefault();
+            const secretPassword = getSecret();
+            if(!secretPassword) return alert("Key phrase required.");
+
+            const payload = {
+                welcomeChannelId: document.getElementById('comm-channel').value.trim(),
+                welcomeMessage: document.getElementById('comm-welcome').value.trim(),
+                leaveMessage: document.getElementById('comm-leave').value.trim(),
+                secretPassword
+            };
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/community/config`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                if(res.ok) alert("Gateway directives saved successfully!");
+            } catch(err) {}
+        }
+
+
+        // --- 4. REACTION ROLE SUBMISSIONS HANDLING ---
+        async function handleReactionRoleSubmit(e) {
+            e.preventDefault();
+            const secretPassword = getSecret();
+            if(!secretPassword) return alert("Validation Key configuration parameter missing.");
+
+            const payload = {
+                channelId: document.getElementById('rr-channel').value.trim(),
+                roleId: document.getElementById('rr-role').value.trim(),
+                buttonText: document.getElementById('rr-btn-text').value.trim(),
+                embedText: document.getElementById('rr-embed-text').value.trim(),
+                secretPassword
+            };
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/community/deploy-reaction-role`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                if(res.ok) {
+                    alert("Reaction role button node successfully injected into channel layout!");
+                    document.getElementById('reaction-role-form').reset();
+                } else { alert("Failed to deploy button element. Verify channel context."); }
+            } catch(err) {}
+        }
+
+
+        // --- 5. BOT PRESENCE STATUS SUBMISSIONS ---
+        async function handlePresenceSubmit(e) {
+            e.preventDefault();
+            const secretPassword = getSecret();
+            if(!secretPassword) return alert("Security key required.");
+
+            const payload = {
+                type: document.getElementById('pres-type').value,
+                text: document.getElementById('pres-text').value.trim(),
+                secretPassword
+            };
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/system/presence`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                if(res.ok) alert("Bot core presence updated!");
+            } catch(err) {}
+        }
+
+
+        // --- 6. AUTOMOD MATRIX ENGINE HANDLERS ---
         async function fetchBannedWords() {
             try {
                 const res = await fetch(`${BACKEND_URL}/api/automod/words`);
