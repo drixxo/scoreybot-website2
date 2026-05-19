@@ -138,6 +138,22 @@
 
             <div class="panel-card">
                 <h2><span style="background-color: var(--accent-neon-blue);"></span> Auto Post & Alerts Integration</h2>
+                
+                <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; border: 1px solid var(--border-subtle); margin-bottom: 25px;">
+                    <h3 style="font-size:0.9rem; margin-bottom: 15px; color: var(--accent-neon-blue)">Routing Global Controls</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Global Live Feed Channel ID</label>
+                            <input type="text" id="global-alert-channel" placeholder="e.g. 112233445566778899">
+                        </div>
+                        <div class="form-group">
+                            <label>Public User Submission Channel ID</label>
+                            <input type="text" id="global-submit-channel" placeholder="e.g. 998877665544332211">
+                        </div>
+                    </div>
+                    <button class="action-btn" style="background:transparent; border: 1px solid var(--accent-neon-blue); color: var(--accent-neon-blue);" onclick="saveGlobalChannels()">Save Channel Settings</button>
+                </div>
+
                 <form id="integration-form" onsubmit="handleIntegrationSubmit(event)">
                     <div class="form-row">
                         <div class="form-group">
@@ -156,7 +172,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Target Discord Channel ID</label>
-                            <input type="text" id="int-channel" placeholder="e.g. 112233445566778899">
+                            <input type="text" id="int-channel" placeholder="Leaves blank for global channel option">
                         </div>
                         <div class="form-group">
                             <label>Ping Role ID (Optional)</label>
@@ -313,11 +329,36 @@
             return document.getElementById('master-secret').value;
         }
 
+        // --- GLOBAL ROUTING MANAGER CONTROLS ---
+        async function saveGlobalChannels() {
+            const secretPassword = getSecret();
+            if(!secretPassword) return alert("Secret Key is required.");
+
+            const payload = {
+                globalChannelId: document.getElementById('global-alert-channel').value.trim(),
+                submitChannelId: document.getElementById('global-submit-channel').value.trim(),
+                secretPassword
+            };
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/streamers/global-channel`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                if(res.ok) alert("Global channel routing nodes updated successfully!");
+            } catch(e) { alert("Network sync fault."); }
+        }
+
         // --- 1. AUTO POST INTEGRATION ENGINE HANDLERS ---
         async function fetchExistingIntegrations() {
             try {
                 const res = await fetch(`${BACKEND_URL}/api/streamers`);
                 const data = await res.json();
+                
+                if (data.globalChannelId) document.getElementById('global-alert-channel').value = data.globalChannelId;
+                if (data.submitChannelId) document.getElementById('global-submit-channel').value = data.submitChannelId;
+
                 const container = document.getElementById('integration-list');
                 container.innerHTML = '';
 
