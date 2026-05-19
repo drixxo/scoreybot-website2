@@ -100,9 +100,10 @@
         .menu-item a {
             display: flex; align-items: center; gap: 15px; padding: 12px 15px;
             color: var(--text-muted); text-decoration: none; font-weight: 600; border-radius: 8px;
+            cursor: pointer; transition: background 0.2s, color 0.2s;
         }
         .menu-item.active a, .menu-item a:hover { color: var(--text-white); background-color: rgba(255, 255, 255, 0.03); }
-        .menu-item.active a { border-left: 3px solid var(--accent-purple); }
+        .menu-item.active a { border-left: 3px solid var(--accent-purple); background-color: rgba(255, 255, 255, 0.02); }
 
         .vibe-meter {
             background: linear-gradient(135deg, #120a21 0%, #07040d 100%);
@@ -118,7 +119,7 @@
 
         /* --- MAIN WINDOW ARRAY --- */
         main { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid var(--border-subtle); }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid var(--border-subtle); flex-shrink: 0; }
         .search-bar { background-color: #0e0c19; border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 20px; width: 350px; color: var(--text-white); outline: none; }
 
         .workspace-matrix { display: grid; grid-template-columns: 1fr 320px; gap: 30px; padding: 40px; max-width: 1600px; width: 100%; margin: 0 auto; }
@@ -129,6 +130,10 @@
 
         .section-block-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         .section-block-title span { width: 8px; height: 8px; background-color: #00ffaa; border-radius: 50%; display: inline-block; }
+
+        /* --- TAB CONTENT PANELS --- */
+        .tab-panel { display: none; flex-direction: column; gap: 30px; }
+        .tab-panel.active { display: flex; }
 
         .pulse-row-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
         .pulse-card { background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 20px; }
@@ -152,8 +157,7 @@
         .system-sidepanel { display: flex; flex-direction: column; gap: 35px; }
         .panel-block-list { background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 20px; }
         .panel-header-wrapper { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 700; margin-bottom: 15px; }
-        .panel-header-wrapper a { color: var(--text-muted); text-decoration: none; font-size: 0.8rem; }
-
+        
         .member-row-node { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
         .member-meta-wrapper { display: flex; align-items: center; gap: 12px; }
         .mini-avatar-node { width: 32px; height: 32px; border-radius: 50%; background-color: #25213b; }
@@ -187,7 +191,12 @@
             <div>
                 <div class="brand">_UNDERSCORE<br><span>COMMUNITY</span></div>
                 <ul class="menu-list">
-                    <li class="menu-item active"><a href="#">🏠 Home</a></li>
+                    <li class="menu-item active" id="tab-btn-home" onclick="switchTab('home')"><a>🏠 Home</a></li>
+                    <li class="menu-item" id="tab-btn-pulse" onclick="switchTab('pulse')"><a>⚡ Pulse</a></li>
+                    <li class="menu-item" id="tab-btn-missions" onclick="switchTab('missions')"><a>🎯 Missions</a></li>
+                    <li class="menu-item" id="tab-btn-chains" onclick="switchTab('chains')"><a>🔗 Chains</a></li>
+                    <li class="menu-item" id="tab-btn-members" onclick="switchTab('members')"><a>👥 Members</a></li>
+                    <li class="menu-item" id="tab-btn-streams" onclick="switchTab('streams')"><a>📡 Stream Hub</a></li>
                     <li class="menu-item"><a href="dashboard.html">⚙️ Admin Control</a></li>
                 </ul>
             </div>
@@ -216,35 +225,75 @@
                 <div class="dashboard-feed">
                     <div class="welcome-hero">
                         <h1 id="welcome-banner">Welcome back!</h1>
-                        <p>The culture runs on <span>you</span>.</p>
+                        <p>The culture runs on <span id="span-accent-name">you</span>.</p>
                     </div>
 
-                    <div>
-                        <div class="section-block-title"><span></span> Community Pulse</div>
-                        <div class="pulse-row-grid" id="pulse-feed-container">
-                            <div class="pulse-card">
-                                <div class="pulse-header">
-                                    <div class="mini-avatar-node" style="background:#00ffaa;"></div>
-                                    <div><strong>General Lounge</strong></div>
+                    <div id="panel-home" class="tab-panel active">
+                        <div>
+                            <div class="section-block-title"><span></span> Feature Stream Activity</div>
+                            <div class="active-media-grid" id="home-featured-container">
                                 </div>
-                                <span class="badge-vc">DISCORD VC</span>
-                                <a href="discord://discord.com/channels/1070368741491224756/1387939087998128198" class="card-action-btn">Launch Discord VC</a>
+                        </div>
+                        <div>
+                            <div class="section-block-title"><span></span> Immediate Discord Comms</div>
+                            <div class="pulse-row-grid">
+                                <div class="pulse-card">
+                                    <div class="pulse-header">
+                                        <div class="mini-avatar-node" style="background:#00ffaa;"></div>
+                                        <div><strong>General Lounge</strong></div>
+                                    </div>
+                                    <span class="badge-vc">DISCORD VC</span>
+                                    <a href="discord://discord.com/channels/YOUR_GUILD_ID/YOUR_VOICE_CHANNEL_ID" class="card-action-btn">Launch Voice Protocol</a>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <div id="panel-pulse" class="tab-panel">
+                        <div class="section-block-title"><span></span> System Operations Activity Log</div>
+                        <div class="pulse-row-grid" id="pulse-feed-container">
                             </div>
                     </div>
 
-                    <div>
-                        <div class="section-block-title"><span></span> Stream Hub</div>
-                        <div class="active-media-grid" id="stream-hub-container">
-                            <div style="color: var(--text-muted); font-size: 0.9rem; padding: 10px;">Scanning framework pathways for active live creators...</div>
+                    <div id="panel-missions" class="tab-panel">
+                        <div class="section-block-title"><span></span> Server Directives & Bounties</div>
+                        <div class="pulse-row-grid" id="missions-container">
+                            <div class="pulse-card">
+                                <h3>💬 Chat Accelerator</h3>
+                                <p style="color:var(--text-muted); font-size:0.85rem; margin-top:5px;">Send 100 messages this week to spike community index layers.</p>
+                                <button class="card-action-btn" style="background:var(--accent-neon-blue);">Progress: Tracked via Discord</button>
+                            </div>
+                            <div class="pulse-card">
+                                <h3>🚀 Hype Spiker</h3>
+                                <p style="color:var(--text-muted); font-size:0.85rem; margin-top:5px;">Attend 2 live community stream broadcasts inside the system panel.</p>
+                                <button class="card-action-btn" style="background:var(--accent-neon-pink);">0 / 2 Handled</button>
+                            </div>
                         </div>
+                    </div>
+
+                    <div id="panel-chains" class="tab-panel">
+                        <div class="section-block-title"><span></span> Active Automation Sub-Chains</div>
+                        <div class="pulse-row-grid" id="chains-container">
+                            </div>
+                    </div>
+
+                    <div id="panel-members" class="tab-panel">
+                        <div class="section-block-title"><span></span> Registered Portal Citizens</div>
+                        <div id="members-directory-list" style="display:flex; flex-direction:column; gap:10px;">
+                            </div>
+                    </div>
+
+                    <div id="panel-streams" class="tab-panel">
+                        <div class="section-block-title"><span></span> Live Network Streams Hub</div>
+                        <div class="active-media-grid" id="stream-hub-container">
+                            </div>
                     </div>
                 </div>
 
                 <div class="system-sidepanel">
                     <div class="panel-block-list">
                         <div class="panel-header-wrapper">
-                            <div>Tracked Streamers</div>
+                            <div>Live Network Feed</div>
                         </div>
                         <div id="tracked-streamers-sidebar">
                             </div>
@@ -257,6 +306,17 @@
     <script>
         const BACKEND_URL = "https://scoreybotv2-production.up.railway.app";
         let isLoginMode = true;
+
+        function switchTab(tabId) {
+            // Toggle side selector links active highlights
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            const targetedBtn = document.getElementById(`tab-btn-${tabId}`);
+            if(targetedBtn) targetedBtn.classList.add('active');
+
+            // Hide/Show correct inner center main windows
+            document.querySelectorAll('.tab-panel').forEach(el => el.classList.remove('active'));
+            document.getElementById(`panel-${tabId}`).classList.add('active');
+        }
 
         function toggleAuthMode() {
             isLoginMode = !isLoginMode;
@@ -285,10 +345,11 @@
                     document.getElementById('app-wrapper').style.display = 'flex';
                     document.getElementById('display-username').innerText = username;
                     document.getElementById('welcome-banner').innerText = `Welcome back, ${username}`;
+                    document.getElementById('span-accent-name').innerText = username;
                     
-                    // Fire automated stream layout parsing instantly upon entering 
-                    loadStreamHubComponents();
-                    setInterval(loadStreamHubComponents, 30000); // Polling update interval metrics loop
+                    // Run telemetry compiler sweeps
+                    runSystemTelemetrySweep();
+                    setInterval(runSystemTelemetrySweep, 30000); 
                 } else {
                     alert(result.error || "Authentication procedure failed.");
                 }
@@ -297,72 +358,125 @@
             }
         }
 
-        async function loadStreamHubComponents() {
+        async function runSystemTelemetrySweep() {
             try {
-                const response = await fetch(`${BACKEND_URL}/api/streamers`);
-                const data = await response.json();
-                const streamersList = Object.keys(data.streamers || {});
+                // Fetch Core Multi-Resource Assets parallel arrays from backend nodes
+                const [streamRes, commandRes, usersRes] = await Promise.all([
+                    fetch(`${BACKEND_URL}/api/streamers`),
+                    fetch(`${BACKEND_URL}/api/commands`),
+                    fetch(`${BACKEND_URL}/api/hub/users`)
+                ]);
 
-                const pulseContainer = document.getElementById('pulse-feed-container');
-                const hubContainer = document.getElementById('stream-hub-container');
+                const streamData = await streamRes.json();
+                const commandData = await commandRes.json();
+                const usersData = await usersRes.json();
+
+                const streamersList = Object.keys(streamData.streamers || {});
+                const commandsList = Object.keys(commandData || {});
+                const usersList = Object.keys(usersData || {});
+
+                // DOM containers resolution hooks
+                const homeFeatured = document.getElementById('home-featured-container');
+                const pulseFeed = document.getElementById('pulse-feed-container');
+                const chainsContainer = document.getElementById('chains-container');
+                const membersListContainer = document.getElementById('members-directory-list');
+                const streamHubContainer = document.getElementById('stream-hub-container');
                 const sidebarContainer = document.getElementById('tracked-streamers-sidebar');
 
-                // Clear previous runtime templates to stop injection stacking
-                hubContainer.innerHTML = "";
+                // Clear layout vectors to allow redraw loops without stacking data duplicates
+                homeFeatured.innerHTML = "";
+                pulseFeed.innerHTML = "";
+                chainsContainer.innerHTML = "";
+                membersListContainer.innerHTML = "";
+                streamHubContainer.innerHTML = "";
                 sidebarContainer.innerHTML = "";
-                
-                // Maintain your static Voice Chat button element loop structure
-                pulseContainer.innerHTML = `
-                    <div class="pulse-card">
-                        <div class="pulse-header">
-                            <div class="mini-avatar-node" style="background:#00ffaa;"></div>
-                            <div><strong>General Lounge</strong></div>
-                        </div>
-                        <span class="badge-vc">DISCORD VC</span>
-                        <a href="discord://discord.com/channels/1070368741491224756/1387939087998128198" class="card-action-btn">Launch Discord VC</a>
-                    </div>
-                `;
 
-                if(streamersList.length === 0) {
-                    hubContainer.innerHTML = `<div style="color:var(--text-muted); font-size:0.9rem;">No streamers configured in system database files yet.</div>`;
-                    sidebarContainer.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem;">None</div>`;
-                    return;
-                }
-
-                // Process data mapping layouts dynamically
-                streamersList.forEach(name => {
-                    const profile = data.streamers[name];
-                    const streamUrl = `https://twitch.tv/${name}`;
-
-                    // 1. Append components to Tracked Right Hand Sidebar list row
-                    sidebarContainer.innerHTML += `
-                        <div class="member-row-node">
-                            <div class="member-meta-wrapper">
-                                <div class="mini-avatar-node" style="background: #2b2640;"></div>
-                                <div class="member-details-text">
-                                    <div>@${name}</div>
-                                    <span>Twitch Creator</span>
+                // --- PROCESS STREAM ENGINE RENDERING ---
+                if (streamersList.length === 0) {
+                    const fallback = `<div style="color:var(--text-muted); font-size:0.9rem; padding:10px;">No streams active in network routing.</div>`;
+                    homeFeatured.innerHTML = fallback;
+                    streamHubContainer.innerHTML = fallback;
+                } else {
+                    streamersList.forEach(name => {
+                        const profile = streamData.streamers[name];
+                        const twitchUrl = `https://twitch.tv/${name}`;
+                        const cardMarkup = `
+                            <div class="media-showcase-card" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(10,8,18,0.95) 100%), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop');">
+                                <span class="badge-live" style="background: ${profile.color || '#6441a5'};">CREATOR</span>
+                                <div>
+                                    <h3 style="font-size: 1rem; font-weight: 700;">@${name}</h3>
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:10px;">Configured to channel: ${profile.channelId || 'Global'}</p>
+                                    <a href="${twitchUrl}" target="_blank" class="card-action-btn" style="margin-top:0; padding:6px 0;">Open Stream Link</a>
                                 </div>
                             </div>
-                            <div class="live-dot-indicator" style="background: ${profile.color || '#6441a5'};"></div>
-                        </div>
-                    `;
+                        `;
+                        homeFeatured.innerHTML += cardMarkup;
+                        streamHubContainer.innerHTML += cardMarkup;
 
-                    // 2. Map responsive card layouts straight to Center Stream Hub grid display
-                    hubContainer.innerHTML += `
-                        <div class="media-showcase-card" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(10,8,18,0.95) 100%), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop');">
-                            <span class="badge-live" style="background: ${profile.color || '#6441a5'};">CREATOR</span>
-                            <div>
-                                <h3 style="font-size: 1rem; font-weight: 700;">@${name}</h3>
-                                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:10px;">Click below to watch live stream broadcast infrastructure.</p>
-                                <a href="${streamUrl}" target="_blank" class="card-action-btn" style="margin-top:0; padding: 6px 0;">Open Channel</a>
+                        sidebarContainer.innerHTML += `
+                            <div class="member-row-node">
+                                <div class="member-meta-wrapper">
+                                    <div class="mini-avatar-node" style="background:${profile.color || '#aa00ff'}"></div>
+                                    <div class="member-details-text">
+                                        <div>@${name}</div>
+                                        <span>Live Monitor Target</span>
+                                    </div>
+                                </div>
+                                <div class="live-dot-indicator"></div>
                             </div>
-                        </div>
-                    `;
-                });
+                        `;
+
+                        pulseFeed.innerHTML += `
+                            <div class="pulse-card">
+                                <div class="pulse-header">
+                                    <div class="mini-avatar-node" style="background:var(--accent-neon-pink);"></div>
+                                    <div><strong>System Link: @${name}</strong></div>
+                                </div>
+                                <div style="font-size:0.8rem; color:var(--text-muted);">Monitoring telemetry connection pathway hooks for stream alerts.</div>
+                            </div>
+                        `;
+                    });
+                }
+
+                // --- PROCESS CHAINS (CUSTOM COMMANDS) ENGINE RENDERING ---
+                if (commandsList.length === 0) {
+                    chainsContainer.innerHTML = `<div style="color:var(--text-muted); font-size:0.9rem; padding:10px;">No custom automation sub-chains compiled.</div>`;
+                } else {
+                    commandsList.forEach(id => {
+                        const cmd = commandData[id];
+                        chainsContainer.innerHTML += `
+                            <div class="pulse-card" style="border-left: 2px solid var(--accent-neon-blue);">
+                                <h3 style="font-size:1rem;">Trigger: ${cmd.prefix || ''}${cmd.trigger}</h3>
+                                <div style="font-size:0.75rem; color:var(--accent-neon-blue); text-transform:uppercase; margin:4px 0;">Deployment: ${cmd.type} command</div>
+                                <p style="color:var(--text-muted); font-size:0.85rem; margin-top:5px; background:rgba(0,0,0,0.2); padding:8px; border-radius:4px;">${cmd.response}</p>
+                            </div>
+                        `;
+                    });
+                }
+
+                // --- PROCESS CITIZENS DIRECTORY ENGINE RENDERING ---
+                if (usersList.length === 0) {
+                    membersListContainer.innerHTML = `<div style="color:var(--text-muted); font-size:0.9rem; padding:10px;">No citizens registered inside portal data arrays.</div>`;
+                } else {
+                    usersList.forEach(usernameKey => {
+                        const profile = usersData[usernameKey];
+                        membersListContainer.innerHTML += `
+                            <div class="pulse-card" style="display:flex; justify-content:between; align-items:center; padding:15px 20px;">
+                                <div style="display:flex; align-items:center; gap:15px;">
+                                    <div class="mini-avatar-node" style="background:var(--accent-purple);"></div>
+                                    <div>
+                                        <strong style="font-size:1rem; color:white;">${profile.displayName}</strong>
+                                        <div style="font-size:0.75rem; color:var(--text-muted);">Registered Citizen Profile Node</div>
+                                    </div>
+                                </div>
+                                <span style="margin-left:auto; font-size:0.75rem; background:rgba(255,255,255,0.03); padding:4px 10px; border-radius:12px; color:var(--accent-neon-blue); border:1px solid rgba(0,243,255,0.1)">SECURE</span>
+                            </div>
+                        `;
+                    });
+                }
 
             } catch (err) {
-                console.error("Critical breakdown compiling real-time streamer telemetry:", err);
+                console.error("Telemetry structural gathering crashed inside data processing arrays: ", err);
             }
         }
 
